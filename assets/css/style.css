@@ -5,3 +5,89 @@ body {
 .body-yellow {
     background-color: #f6e7b4;
 }
+
+/* reset basique */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* body prend toute la hauteur */
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #fdefbe;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* commence depuis le haut */
+  padding: 40px 0; /* bord en haut et en bas */
+}
+
+/* container principal */
+.container {
+  width: 70%;        /* plus petit que 90%, plus de bord à gauche/droite */
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* grille d'images */
+.image-grid {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+/* bloc gauche */
+.image-grid .left {
+  width: 50%;
+}
+
+.image-grid .left img {
+  width: 100%;
+  height: 500px; /* double de la hauteur originale */
+  border-radius: 16px;
+  object-fit: cover;
+  object-position: 30% center;
+}
+
+/* bloc droit */
+.image-grid .right {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.image-grid .right img {
+  width: 100%;
+  height: 240px; /* double hauteur des petites images */
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+/* boutons */
+.btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 32px;
+  border: none;
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: #000;
+  color: #fff;
+}
+
+/* logo */
+.logo img {
+  width: 60px;
+  margin-top: 16px;
+}

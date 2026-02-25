@@ -7,6 +7,5 @@
     <title>Golden Memories</title>
 </head>
 <body>
-    
 </body>
 </html>
