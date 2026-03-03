@@ -7,7 +7,10 @@
     <title>Golden Memories</title>
 </head>
 <body>
-    
+    <?php
+    include './templates/header.php';
+    ?>
+
     <?php
     include './templates/navbar.php';
     ?>
