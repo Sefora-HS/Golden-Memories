@@ -7,18 +7,17 @@
     <title>Golden Memories</title>
 </head>
 <body>
-    <nav>
-        <ul>
-            <li></li>
-        </ul>
-    </nav>
+    
+    <?php
+    include './templates/navbar.php';
+    ?>
 
-    <!-- boxicons -->
-    <script src="https://unpkg.com/@boxicons/js@latest"></script>
-    <script>
-    // When using CDN, all icons are available
-    boxicons.getIcons({ icons: boxicons.icons });
-    </script>
+    <!-- Javascript link -->
+     <script src="./assets/js/app.js"></script>
+
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     
 </body>
 </html>
