@@ -1,7 +1,7 @@
 <nav class="navigation">
         <ul>
             <!-- accueil -->
-            <li class="list active">
+            <li class="list">
                 <a href="#">
                     <span class="icon"><ion-icon name="images-outline"></ion-icon></span>
                 </a>
@@ -15,7 +15,7 @@
             </li>
 
             <!-- ajouter -->
-            <li class="list">
+            <li class="list active">
                 <a href="#">
                     <span class="icon"><ion-icon name="add-circle" class="circle"></ion-icon></span>
                 </a>
