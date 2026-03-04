@@ -11,6 +11,8 @@
     include './templates/header.php';
     ?>
 
+    <h1 class="title">Mes souvenirs</h1>
+
     <?php
     include './templates/navbar.php';
     ?>
