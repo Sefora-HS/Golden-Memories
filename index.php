@@ -12,6 +12,7 @@
     ?>
 
     <h1 class="title">Mes souvenirs</h1>
+    <p class="soustitre">"Vos moments précieux, tous au même endroits"</p>
 
     <?php
     include './templates/navbar.php';
