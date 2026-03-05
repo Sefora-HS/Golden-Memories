@@ -4,6 +4,7 @@
             <li class="list">
                 <a href="#">
                     <span class="icon"><ion-icon name="images-outline"></ion-icon></span>
+                    <p>Albums</p>
                 </a>
             </li>
 
@@ -11,6 +12,7 @@
             <li class="list">
                 <a href="#">
                     <span class="icon"><ion-icon name="shuffle-outline"></ion-icon></span>
+                    <p>Explorer</p>
                 </a>
             </li>
 
@@ -25,6 +27,7 @@
             <li class="list">
                 <a href="#">
                     <span class="icon"><ion-icon name="people-outline"></ion-icon></span>
+                    <p>Partages</p>
                 </a>
             </li>
 
@@ -32,6 +35,7 @@
             <li class="list">
                 <a href="#">
                     <span class="icon"><ion-icon name="time-outline"></ion-icon></span>
+                    <p>Capsules</p>
                 </a>
             </li>
             <div class="indicator"></div>
