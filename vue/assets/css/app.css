@@ -147,6 +147,12 @@ body {
     color: rgb(54, 54, 54);
 }
 
+.parametre,
+.notif,
+.pp {
+    box-shadow: 0 0 10px rgba(255, 221, 87, 0.3);
+}
+
 /* Home page */
 
 .title {
