@@ -4,7 +4,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 $user = 'administrateur';
-$mdp = 'JclpG_MplU223';
+$mdp = 'JclpG_Mpl';
 
 try {
     $bdd = new PDO(
