@@ -314,7 +314,7 @@ body {
         .note-content,
         .audio-content {
             padding: 20px;
-            color: white;
+            color: #323231;
             height: 100%;
             display: flex;
             flex-direction: column;
