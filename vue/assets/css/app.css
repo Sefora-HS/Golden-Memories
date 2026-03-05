@@ -308,10 +308,8 @@ body {
         }
 
         /* Couleurs par type */
-        .type-note  { background: #2d1b69; }
-        .type-audio { background: #1a3a2e; }
-        .type-photo { background: #1a1a2e; }
-        .type-video { background: #2d1a1a; }
+        .type-note  { background: #F6E7B4; }
+        .type-audio { background: #F6E7B4; }
 
         .note-content,
         .audio-content {
