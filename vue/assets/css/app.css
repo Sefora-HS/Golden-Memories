@@ -302,3 +302,143 @@ body {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+
+.auth-images {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    padding: 2rem 0.5rem 0.5rem 0.5rem;
+    height: 50vh;
+}
+
+.auth-images img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+.auth-header {
+    text-align: center;
+    padding: 2rem 1.5rem 1rem;
+}
+
+.auth-logo {
+    font-family: 'Caveat', cursive;
+    font-size: 2.8rem;
+    color: rgb(54, 54, 54);
+}
+
+.auth-logo-img {
+    text-align: center;
+    padding-top: 3rem;
+}
+
+.auth-logo-img img {
+    width: 80px;
+}
+
+.auth-baseline {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 0.3rem;
+}
+.auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 1.5rem;
+}
+
+.btn-primary {
+    background: #2c2c2c;
+    color: #f6e7b4;
+    text-align: center;
+    padding: 1rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+}
+
+.btn-secondary {
+    background: #f6e7b4;
+    color: #2c2c2c;
+    text-align: center;
+    padding: 1rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* formulaire inscription */
+
+.form-page {
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    min-height: 100vh;
+}
+
+.form-top {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.form-back {
+    font-size: 1.5rem;
+    color: #2c2c2c;
+    text-decoration: none;
+    background: #fff;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(255, 221, 87, 0.3);
+}
+
+.form-title {
+    font-family: 'Caveat', cursive;
+    font-size: 2rem;
+    color: #2c2c2c;
+}
+
+.form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    color: #888;
+    font-weight: 500;
+}
+
+.form-group input {
+    background: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 0.9rem 1rem;
+    font-size: 1rem;
+    font-family: 'DM Sans', sans-serif;
+    color: #2c2c2c;
+    outline: none;
+    box-shadow: 0 0 10px rgba(255, 221, 87, 0.2);
+}
+
+.form-group input:focus {
+    box-shadow: 0 0 0 2px #f6e7b4;
+}
