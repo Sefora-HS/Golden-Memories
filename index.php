@@ -3,10 +3,6 @@
         session_start();
     }
 
-    if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
 $_SESSION['user_id'] = 1;
 
     require_once 'modele/config.php';
