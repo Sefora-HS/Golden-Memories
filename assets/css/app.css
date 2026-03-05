@@ -93,7 +93,7 @@ body {
     background-color: #f6e7b4;
     border-radius: 50%;
     z-index: 1;
-    transition: 0.5s;
+    transition: 0.3s;
 }
 
 .indicator::before {
@@ -130,10 +130,10 @@ body {
     display: none;
 }
 .navigation ul li:nth-child(4).active ~ .indicator {
-    transform: translateX(calc(70px * 3));
+    transform: translateX(calc(70px * 3.02));
 }
 .navigation ul li:nth-child(5).active ~ .indicator {
-    transform: translateX(calc(70px * 4));
+    transform: translateX(calc(70px * 4.03));
 }
 
 .navigation ul li:nth-child(3).active a .icon {
