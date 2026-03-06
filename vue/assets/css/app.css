@@ -142,10 +142,20 @@ body {
     object-fit: cover;
 }
 
-.logo-title {
-    font-family: 'Caveat', cursive;
-    font-size: 1.4rem;
-    color: rgb(54, 54, 54);
+.header h1 a.logo-title,
+.header h1 a.logo-title:hover,
+.header h1 a.logo-title:visited,
+.header h1 a.logo-title:active,
+.header h1 a.logo-title::after,
+.header h1 a.logo-title::before {
+    text-decoration: none !important;
+    color: rgb(54, 54, 54) !important;
+    border: none !important;
+    outline: none !important;
+    content: none !important;
+    display: inline-block;
+    font-family: 'Caveat', 'cursive';
+    font-size: 1.7rem;
 }
 
 .parametre,
