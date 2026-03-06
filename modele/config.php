@@ -19,4 +19,6 @@ try {
 } catch (PDOException $e) {
     die("Erreur de connexion : " . $e->getMessage());
 }
+
+define('BASE_URL', '/Golden-memories');
 ?>
