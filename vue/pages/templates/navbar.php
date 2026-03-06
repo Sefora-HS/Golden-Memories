@@ -10,7 +10,7 @@
 
             <!-- explorer -->
             <li class="list">
-                <a href="#">
+                <a href="./vue/pages/explore.php">
                     <span class="icon"><ion-icon name="shuffle-outline"></ion-icon></span>
                     <p>Explorer</p>
                 </a>
