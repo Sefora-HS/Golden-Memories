@@ -1,5 +1,6 @@
 <?php
 require_once '../../modele/config.php';
+require_once '../../modele/User.php';
 
 if (!isset($_SESSION['user'])) {
     header('Location: ' . BASE_URL . '/vue/pages/home.php');
