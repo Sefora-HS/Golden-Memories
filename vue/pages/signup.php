@@ -11,7 +11,7 @@
 <div class="form-page">
 
     <div class="form-top">
-        <a href="./signup.php" class="form-back">
+        <a href="./home.php" class="form-back">
             <ion-icon name="arrow-back-outline"></ion-icon>
         </a>
         <h1 class="form-title">Créer un compte</h1>

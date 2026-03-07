@@ -30,7 +30,7 @@
 
     <a href="../index.php" class="btn-primary">Se connecter</a>
 
-    <a href="./signup-form.php" class="btn-secondary">Pas encore de compte ?</a>
+    <a href="./signup.php" class="btn-secondary">Pas encore de compte ?</a>
 </div>
 </div>
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
