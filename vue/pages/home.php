@@ -1,3 +1,12 @@
+<?php
+require_once '../../modele/config.php';
+
+if (isset($_SESSION['user'])) {
+    header('Location: ' . BASE_URL . '/index.php');
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>

@@ -1,8 +1,12 @@
 <?php
 require_once '../../modele/config.php';
 
-$userId = 1;
-$userConnecte = ['id' => 1, 'username' => 'test', 'picture' => 'default.jpg'];
+if (!isset($_SESSION['user'])) {
+    header('Location: ' . BASE_URL . '/vue/pages/home.php');
+    exit;
+}
+$userConnecte = $_SESSION['user'];
+$userId = $userConnecte['id'];
 
 $stmt = $bdd->prepare("
     SELECT m.*, u.username, u.picture,
@@ -10,7 +14,8 @@ $stmt = $bdd->prepare("
            (SELECT COUNT(*) FROM likes WHERE memory_id = m.id AND user_id = :uid) AS user_liked
     FROM memories m
     JOIN users u ON m.user_id = u.id
-    WHERE m.type IN ('photo', 'video', 'note')
+    WHERE m.user_id = :uid
+    AND m.type IN ('photo', 'video', 'note')
     ORDER BY RAND()
     LIMIT 20
 ");

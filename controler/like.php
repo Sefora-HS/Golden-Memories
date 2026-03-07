@@ -1,11 +1,14 @@
 <?php
-require_once '../modele/config.php';
+require_once '../../modele/config.php';
 
 header('Content-Type: application/json');
 
-// DEV : utilisateur simulé
-$userId = 1;
+if (!isset($_SESSION['user'])) {
+    echo json_encode(['error' => 'Non connecté']);
+    exit;
+}
 
+$userId   = $_SESSION['user']['id'];
 $data     = json_decode(file_get_contents('php://input'), true);
 $memoryId = (int)($data['memory_id'] ?? 0);
 
@@ -14,7 +17,6 @@ if (!$memoryId) {
     exit;
 }
 
-// Vérifier si déjà liké
 $check = $bdd->prepare("SELECT id FROM likes WHERE user_id = :uid AND memory_id = :mid");
 $check->execute([':uid' => $userId, ':mid' => $memoryId]);
 

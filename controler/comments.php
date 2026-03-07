@@ -1,10 +1,14 @@
 <?php
-require_once '../modele/config.php';
+require_once '../../modele/config.php';
 
 header('Content-Type: application/json');
 
-// DEV : utilisateur simulé
-$userId = 1;
+if (!isset($_SESSION['user'])) {
+    echo json_encode(['error' => 'Non connecté']);
+    exit;
+}
+
+$userId = $_SESSION['user']['id'];
 
 // GET — récupérer les commentaires
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {

@@ -14,7 +14,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 </li>
 
 <li class="list <?= ($current_page == 'explore.php') ? 'active' : '' ?>">
-    <a href="<?= ($current_page == 'explore.php') ? '#' : BASE_URL . 'vue/pages/explore.php' ?>">
+    <a href="<?= ($current_page == 'explore.php') ? '#' : BASE_URL . '/vue/pages/explore.php' ?>">
         <span class="icon"><ion-icon name="shuffle-outline"></ion-icon></span>
         <p>Explorer</p>
     </a>
