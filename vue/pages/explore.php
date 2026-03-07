@@ -10,7 +10,7 @@ $stmt = $bdd->prepare("
            (SELECT COUNT(*) FROM likes WHERE memory_id = m.id AND user_id = :uid) AS user_liked
     FROM memories m
     JOIN users u ON m.user_id = u.id
-    WHERE m.type IN ('photo', 'video')
+    WHERE m.type IN ('photo', 'video', 'note')
     ORDER BY RAND()
     LIMIT 20
 ");
@@ -22,7 +22,7 @@ $memories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../assets/css/app.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/vue/assets/css/app.css?v=<?= time() ?>">
     <title>Golden Memories</title>
 </head>
 <body>
@@ -38,13 +38,23 @@ $memories = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php else: foreach ($memories as $m): ?>
 
     <div class="memory-card">
-        <img src="<?= BASE_URL ?>/<?= htmlspecialchars($m['file_path']) ?>" alt="">
+
+        <?php if ($m['type'] === 'note'): ?>
+            <div class="memory-card-note">
+                <div class="note-quote">"</div>
+                <p><?= nl2br(htmlspecialchars($m['content'] ?? '')) ?></p>
+            </div>
+        <?php else: ?>
+            <img src="<?= BASE_URL ?>/<?= htmlspecialchars($m['file_path']) ?>" alt="">
+        <?php endif; ?>
+
         <div class="memory-card-info">
             <?php if ($m['title']): ?>
                 <div class="memory-card-title"><?= htmlspecialchars($m['title']) ?></div>
             <?php endif; ?>
             <div class="memory-card-date"><?= date('d/m/Y', strtotime($m['created_at'])) ?></div>
         </div>
+
         <div class="memory-card-actions">
             <button class="action-btn <?= $m['user_liked'] ? 'liked' : '' ?>"
                     onclick="toggleLike(this, <?= $m['id'] ?>)">
@@ -87,9 +97,9 @@ $memories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <script>
     const BASE_URL = '<?= BASE_URL ?>';
 </script>
-<script src="../assets/js/app.js"></script>
-<script src="../assets/js/explore.js"></script>
-<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+<script src="<?= BASE_URL ?>/vue/assets/js/app.js?v=<?= time() ?>"></script>
+<script src="<?= BASE_URL ?>/vue/assets/js/explore.js?v=<?= time() ?>"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </body>
 </html>
