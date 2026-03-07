@@ -20,8 +20,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
     </a>
 </li>
 
-<li class="list">
-    <a href="#">
+<li class="list <?= ($current_page == 'ajout.php') ? 'active' : '' ?>">
+    <a href="<?= ($current_page == 'ajout.php') ? '#' : BASE_URL . '/vue/pages/ajout.php' ?>">
         <span class="icon"><ion-icon name="add-circle" class="circle"></ion-icon></span>
     </a>
 </li>
