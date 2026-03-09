@@ -101,8 +101,15 @@ body {
     align-items: center;
     height: 10vh;
     width: 100%;
-    padding: 0 1rem;
+    padding: 0 1.2rem 0 1rem;
     margin-bottom: 1rem;
+    gap: 0.5rem;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
 }
 
 .parametre {
@@ -863,4 +870,49 @@ body {
     width: 100%;
     aspect-ratio: 1;
     object-fit: cover;
+}
+
+/* paramètres*/
+/* ── PARAMÈTRES ── */
+
+.settings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.settings-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #fff;
+    padding: 1rem 1.2rem;
+    border-radius: 14px;
+    box-shadow: 0 0 10px rgba(255, 221, 87, 0.2);
+    color: #2c2c2c;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.settings-item ion-icon:first-child {
+    font-size: 1.4rem;
+    color: #2c2c2c;
+}
+
+.settings-item span {
+    flex: 1;
+}
+
+.settings-arrow {
+    font-size: 1rem;
+    color: #ccc;
+}
+
+.settings-danger {
+    color: #e84040;
+    margin-top: 1rem;
+}
+
+.settings-danger ion-icon {
+    color: #e84040 !important;
 }

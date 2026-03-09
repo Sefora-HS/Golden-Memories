@@ -10,11 +10,13 @@ if (isset($_SESSION['user']['id'])) {
 ?>
 
 <header class="header">
-    <div class="parametre"><ion-icon name="cog-outline"></ion-icon></div>
     <h1><a href="<?= BASE_URL ?>" class="logo-title">Golden Memories</a></h1>
-    <div class="notif"><ion-icon name="notifications-outline"></ion-icon></div>
-    <div class="pp">
-    <a href="<?= BASE_URL ?>/vue/pages/profil.php">
-        <img src="<?= BASE_URL ?>/vue/assets/images/<?= htmlspecialchars($userConnecte['picture'] ?? 'default.jpg') ?>" alt="Photo de profil">
-    </a>
-</div></header>
+    <div class="header-right">
+        <div class="notif"><ion-icon name="notifications-outline"></ion-icon></div>
+        <div class="pp">
+            <a href="<?= BASE_URL ?>/vue/pages/profil.php">
+                <img src="<?= BASE_URL ?>/vue/assets/images/<?= htmlspecialchars($userConnecte['picture'] ?? 'default.jpg') ?>" alt="Photo de profil">
+            </a>
+        </div>
+    </div>
+</header>

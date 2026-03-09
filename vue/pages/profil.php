@@ -18,9 +18,9 @@
             <ion-icon name="arrow-back-outline"></ion-icon>
         </a>
         <p class="profil-arobase">@candice</p>
-        <div class="parametre">
+        <a href="./parametres.php" class="parametre">
             <ion-icon name="cog-outline"></ion-icon>
-        </div>
+        </a>
     </div>
 
     <!-- Photo de profil + nom -->
