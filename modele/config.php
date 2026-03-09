@@ -20,7 +20,7 @@ try {
     die("Erreur de connexion : " . $e->getMessage());
 }
 
-define('BASE_URL', 'https://rebekah-nonorganic-kane.ngrok-free.dev/Golden-Memories'); 
+//define('BASE_URL', 'https://rebekah-nonorganic-kane.ngrok-free.dev/Golden-Memories'); 
 
-//define('BASE_URL', 'http://localhost/Golden-Memories');
+define('BASE_URL', 'http://localhost/Golden-Memories');
 ?>
