@@ -768,3 +768,99 @@ body {
     color: #323231;
     font-family: 'Caveat', 'cursive';
 }
+ 
+/* profil */
+
+.profil-page {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 3rem;
+}
+
+.profil-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 1.5rem;
+}
+
+.profil-arobase {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c2c2c;
+}
+
+.profil-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.8rem 1.5rem 1.2rem;
+}
+
+.profil-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #f6e7b4;
+}
+
+.profil-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profil-nom {
+    font-family: 'Caveat', cursive;
+    font-size: 1.8rem;
+    color: #2c2c2c;
+}
+
+.profil-bio {
+    font-size: 0.85rem;
+    color: #888;
+}
+
+.profil-stats {
+    display: flex;
+    justify-content: space-around;
+    padding: 1rem 2rem;
+    background: #fff;
+    border-radius: 16px;
+    margin: 0 1.5rem 1.5rem;
+    box-shadow: 0 0 10px rgba(255, 221, 87, 0.2);
+}
+
+.profil-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.stat-nombre {
+    font-family: 'Caveat', cursive;
+    font-size: 1.8rem;
+    color: #2c2c2c;
+    font-weight: 700;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #888;
+}
+
+.profil-grille {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+}
+
+.profil-grille img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+}

@@ -14,5 +14,7 @@ if (isset($_SESSION['user']['id'])) {
     <h1><a href="<?= BASE_URL ?>" class="logo-title">Golden Memories</a></h1>
     <div class="notif"><ion-icon name="notifications-outline"></ion-icon></div>
     <div class="pp">
-    <img src="<?= BASE_URL ?>/vue/assets/images/<?= htmlspecialchars($userConnecte['picture'] ?? 'default.jpg') ?>" alt="Photo de profil">
-</header>
+    <a href="<?= BASE_URL ?>/vue/pages/profil.php">
+        <img src="<?= BASE_URL ?>/vue/assets/images/<?= htmlspecialchars($userConnecte['picture'] ?? 'default.jpg') ?>" alt="Photo de profil">
+    </a>
+</div></header>
