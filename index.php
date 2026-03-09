@@ -1,13 +1,17 @@
 <?php
+//import du fichier config
 require_once 'modele/config.php';
 
+//Vérification si un utilisateur est connecté sinon redirection vers la page d'accueil
 if (!isset($_SESSION['user'])) {
     header('Location: ' . BASE_URL . '/vue/pages/home.php');
     exit;
 }
 
+//Récupération + stockage des informations et id de l'utilisateur pour les requêtes
 $userConnecte = $_SESSION['user'];
 $userId = $userConnecte['id'];
+
 
 $stmt = $bdd->prepare("
     SELECT m.*, a.title as album_title 
