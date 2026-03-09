@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (!in_array($ext, $allowed[$type])) {
                 $erreur = 'Format de fichier non supporté.';
-            } elseif ($file['size'] > 50 * 1024 * 1024) {
+            } elseif ($file['size'] > 1000 * 1024 * 1024) {
                 $erreur = 'Fichier trop lourd (max 50 Mo).';
             } else {
                 $uploadDir = __DIR__ . '/../../uploads/';

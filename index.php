@@ -1,13 +1,17 @@
 <?php
+//import du fichier config
 require_once 'modele/config.php';
 
+//Vérification si un utilisateur est connecté sinon redirection vers la page d'accueil
 if (!isset($_SESSION['user'])) {
     header('Location: ' . BASE_URL . '/vue/pages/home.php');
     exit;
 }
 
+//Récupération + stockage des informations et id de l'utilisateur pour les requêtes
 $userConnecte = $_SESSION['user'];
 $userId = $userConnecte['id'];
+
 
 $stmt = $bdd->prepare("
     SELECT m.*, a.title as album_title 
@@ -104,7 +108,7 @@ $souvenirs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <?php include './vue/pages/templates/navbar.php'; ?>
 
-<script src="./vue/assets/js/app.js"></script>
+<script src="<?= BASE_URL ?>/vue/assets/js/app.js?v=<?= time() ?>"></script>
 <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </body>
