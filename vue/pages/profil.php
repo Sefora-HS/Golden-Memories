@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../assets/css/app.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/vue/assets/css/app.css?v=<?= time() ?>">
     <title>Golden Memories — Profil</title>
 </head>
 <body>
@@ -26,7 +26,7 @@
     <!-- Photo de profil + nom -->
     <div class="profil-header">
         <div class="profil-avatar">
-            <img src="../assets/images/default.jpg" alt="Photo de profil">
+            <img src="<?= BASE_URL ?>/vue/assets/images/<?= htmlspecialchars($userConnecte['picture'] ?? 'default.jpg') ?>" alt="Photo de profil">
         </div>
         <h2 class="profil-nom">Candice</h2>
         <p class="profil-bio">✨ Collectionneuse de jolis souvenirs</p>
