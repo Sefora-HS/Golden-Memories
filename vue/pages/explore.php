@@ -1,14 +1,20 @@
 <?php
+//Import du fichier config et de la class User
 require_once '../../modele/config.php';
 require_once '../../modele/User.php';
 
+//Vérification si un utilisateur est connecté sinon redirection vers la page d'accueil
 if (!isset($_SESSION['user'])) {
     header('Location: ' . BASE_URL . '/vue/pages/home.php');
     exit;
 }
+
+//Récupération + stockage des informations et id de l'utilisateur pour les requêtes
 $userConnecte = $_SESSION['user'];
 $userId = $userConnecte['id'];
 
+//préparer une requête SQL de manière sécurisés pour récupérer les l'username, la pp, le nombre de like des souvenirs , si l'utilisateur a liké, 
+//et les souvenirs associé a ces parametres, seulement photos, videos, et notes, de manière aléatoire et limité à 50
 $stmt = $bdd->prepare("
     SELECT m.*, u.username, u.picture,
            (SELECT COUNT(*) FROM likes WHERE memory_id = m.id) AS likes_count,
@@ -18,9 +24,11 @@ $stmt = $bdd->prepare("
     WHERE m.user_id = :uid
     AND m.type IN ('photo', 'video', 'note')
     ORDER BY RAND()
-    LIMIT 20
+    LIMIT 50
 ");
 $stmt->execute([':uid' => $userId]);
+
+//création d'une variable $memories contenant les infos selectionnés sous forme de tableau associatif
 $memories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
@@ -33,23 +41,32 @@ $memories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
 
+<!-- Inclusion du header -->
 <?php include './templates/header.php'; ?>
 
 <h1 class="title">Explorer</h1>
 <p class="soustitre">"Redécouvrez vos souvenirs au hasard"</p>
 
 <div class="contenu-explore">
+    <!-- Si aucun souvenir dans $memories affiché : -->
     <?php if (empty($memories)): ?>
         <p class="empty-msg">Aucun souvenir à explorer.</p>
     <?php else: foreach ($memories as $m): ?>
 
     <div class="memory-card">
 
+        <!-- Si  -->
         <?php if ($m['type'] === 'note'): ?>
             <div class="memory-card-note">
                 <div class="note-quote">"</div>
                 <p><?= nl2br(htmlspecialchars($m['content'] ?? '')) ?></p>
             </div>
+
+        <?php elseif ($m['type'] === 'video'): ?>
+            <video controls>
+                <source src="<?= BASE_URL ?>/<?= htmlspecialchars($m['file_path']) ?>" type="video/mp4">
+            </video>
+
         <?php else: ?>
             <img src="<?= BASE_URL ?>/<?= htmlspecialchars($m['file_path']) ?>" alt="">
         <?php endif; ?>

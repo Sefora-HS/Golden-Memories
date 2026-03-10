@@ -527,6 +527,13 @@ body {
     display: block;
 }
 
+.memory-card video {
+    width: 100%;
+    aspect-ratio: 4/5;
+    object-fit: cover;
+    display: block;
+}
+
 .memory-card-info {
     padding: 10px 14px 4px;
 }
