@@ -880,7 +880,6 @@ body {
 }
 
 /* paramètres*/
-/* ── PARAMÈTRES ── */
 
 .settings-list {
     display: flex;
@@ -925,6 +924,10 @@ body {
 }
 
 /* Page RGPD */
+.form-page h3 {
+    color: #323231;
+}
+
 .privacy-content {
     display: flex;
     flex-direction: column;
@@ -991,8 +994,8 @@ body {
 
 .btn-download {
     display: block;
-    background-color: #3897f0;
-    color: white !important;
+    background-color: #F6E7B4;
+    color: #323231;
     text-align: center;
     padding: 12px;
     border-radius: 10px;
@@ -1080,7 +1083,7 @@ body {
 }
 
 .meta-subtitle {
-    color: #0095f6; /* Bleu lien */
+    color: #F6E7B4;
     font-weight: 600;
     margin-bottom: 10px;
 }

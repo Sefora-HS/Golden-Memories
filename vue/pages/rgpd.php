@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <link rel="stylesheet" href="../assets/css/app.css">
     <title>Golden Memories — Confidentialité</title>
 </head>
 <body>
 
 <div class="form-page">
     <div class="form-top">
-        <a href="settings.html" class="form-back">
+        <a href="parametres.php" class="form-back">
             <ion-icon name="chevron-back-outline"></ion-icon>
         </a>
         <h2 class="form-title">Confidentialité</h2>
@@ -54,6 +53,8 @@
         </div>
     </div>
 </div>
+
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 
 </body>
 </html>

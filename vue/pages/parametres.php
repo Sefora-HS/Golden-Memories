@@ -16,7 +16,7 @@
     
     <div id="main-settings-view">
         <div class="form-top">
-            <a href="index.html" class="form-back">
+            <a href="<?= BASE_URL ?>/vue/pages/profil.php?v=<?= time() ?>" class="form-back">
                 <ion-icon name="arrow-back-outline"></ion-icon>
             </a>
             <h2 class="form-title">Paramètres</h2>
@@ -38,7 +38,7 @@
                 <span>Notifications</span>
             </div>
 
-            <a href="privacy.html" class="setting-item">
+            <a href="rgpd.php" class="setting-item">
                 <ion-icon name="lock-closed-outline"></ion-icon>
                 <span>Confidentialité</span>
             </a>
