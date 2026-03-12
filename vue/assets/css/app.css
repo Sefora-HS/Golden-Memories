@@ -190,7 +190,7 @@ body {
     height: 100vh;
 }
 
-/* ── BENTO GRID ── */
+/* Bento grid */
 
 .bento-grid {
     display: grid;
@@ -318,7 +318,7 @@ body {
     opacity: 0.4;
 }
 
-/* ── RESPONSIVE ── */
+/* Responsive */
 
 @media (max-width: 768px) {
     .bento-grid {
@@ -957,9 +957,7 @@ body {
     margin-bottom: 0.3rem;
 }
 
-
-
-/* ── LE PETIT CARRÉ CENTRÉ ── */
+/* Carré centré */
 
 .legal-card {
     background: #ffffff;
@@ -1020,7 +1018,7 @@ body {
     font-size: 1.8rem;
 }
 
-/* Barre de recherche style Instagram */
+/* Barre de recherche style Insta */
 .search-bar {
     background: #262626;
     border-radius: 10px;
