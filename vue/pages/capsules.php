@@ -54,7 +54,7 @@
         </div>
         <div class="capsule-info">
             <h3 class="capsule-title">Voyage à Rome 🇮🇹</h3>
-            <p class="capsule-date">Ouverte depuis le 1er jan 2025</p>
+            <p class="capsule-date">Ouverte depuis le 1er janvier 2025</p>
         </div>
         <div class="capsule-badge capsule-badge-open">Ouverte</div>
     </div>
