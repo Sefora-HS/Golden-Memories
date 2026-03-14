@@ -13,7 +13,7 @@ if (!isset($_SESSION['user'])) {
 $userConnecte = $_SESSION['user'];
 $userId = $userConnecte['id'];
 
-//préparer une requête SQL de manière sécurisés pour récupérer les l'username, la pp, le nombre de like des souvenirs , si l'utilisateur a liké, 
+//préparer une requête SQL de manière sécurisés pour récupérer les l'username, la pp, le nombre de like des souvenirs , si l'utilisateur a liké,
 //et les souvenirs associé a ces parametres, seulement photos, videos, et notes, de manière aléatoire et limité à 50
 $stmt = $bdd->prepare("
     SELECT m.*, u.username, u.picture,
@@ -55,33 +55,40 @@ $memories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="memory-card">
 
-        <!-- Si  -->
+        <!-- Si le souvenir est de type note -->
         <?php if ($m['type'] === 'note'): ?>
             <div class="memory-card-note">
                 <div class="note-quote">"</div>
                 <p><?= nl2br(htmlspecialchars($m['content'] ?? '')) ?></p>
             </div>
 
+        <!-- Si le souvenir est de type video -->
         <?php elseif ($m['type'] === 'video'): ?>
             <video controls>
                 <source src="<?= BASE_URL ?>/<?= htmlspecialchars($m['file_path']) ?>" type="video/mp4">
             </video>
 
+        <!-- Si le souvenir est de type photo -->
         <?php else: ?>
             <img src="<?= BASE_URL ?>/<?= htmlspecialchars($m['file_path']) ?>" alt="">
         <?php endif; ?>
 
+        <!-- Affichage des infos du souvenirs -->
         <div class="memory-card-info">
+            <!-- titre -->
             <?php if ($m['title']): ?>
                 <div class="memory-card-title"><?= htmlspecialchars($m['title']) ?></div>
             <?php endif; ?>
+            <!-- date -->
             <div class="memory-card-date"><?= date('d/m/Y', strtotime($m['created_at'])) ?></div>
         </div>
 
+        <!-- bouton like et commentaires -->
         <div class="memory-card-actions">
             <button class="action-btn <?= $m['user_liked'] ? 'liked' : '' ?>"
                     onclick="toggleLike(this, <?= $m['id'] ?>)">
                 <ion-icon name="<?= $m['user_liked'] ? 'heart' : 'heart-outline' ?>"></ion-icon>
+                <!-- nombre de like -->
                 <span><?= $m['likes_count'] ?></span>
             </button>
             <button class="action-btn" onclick="openComments(<?= $m['id'] ?>)">
@@ -98,6 +105,7 @@ $memories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <div id="overlay" onclick="closePanel()"></div>
 
+<!-- Bloc pour la saisie et visualisation des commentaire -->
 <div id="panel-comments">
     <div class="panel-handle"></div>
     <div class="panel-header">

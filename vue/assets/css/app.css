@@ -1111,3 +1111,80 @@ body {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* affichage des albums personnels */
+.albums-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.album-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.album-card-cover {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+}
+
+.album-card-cover--placeholder {
+    width: 100%;
+    height: 200px;
+    background: #F6E7B4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #323231;
+    font-size: 42px;
+}
+
+.album-card-body {
+    padding: 14px 16px;
+    background-color: #F6E7B4;
+}
+
+.album-card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+    color: #1a1a1a;
+}
+
+.album-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.album-card-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.albums-empty {
+    text-align: center;
+    padding: 50px 16px;
+    color: #999;
+}
+
+.albums-empty ion-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.albums-empty p {
+    font-size: 0.9rem;
+}

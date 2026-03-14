@@ -7,7 +7,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <ul>
 
 <li class="list <?= ($current_page == 'albums.php') ? 'active' : '' ?>">
-    <a href="<?= ($current_page == 'albums.php') ? '#' : BASE_URL . 'albums.php' ?>">
+    <a href="<?= ($current_page == 'albums.php') ? '#' : BASE_URL . '/vue/pages/albums.php' ?>">
         <span class="icon"><ion-icon name="images-outline"></ion-icon></span>
         <p>Albums</p>
     </a>
