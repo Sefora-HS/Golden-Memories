@@ -1390,3 +1390,225 @@ body {
 .albums-empty p {
     font-size: 0.9rem;
 }
+
+/* ── Topbar ── */
+.ci-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #f6e7b4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .9rem 1.25rem;
+}
+
+.ci-back {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.08);
+    display: flex; align-items: center; justify-content: center;
+    color: #1a1a1a; font-size: 1.15rem;
+    text-decoration: none;
+    transition: background .18s;
+}
+.ci-back:hover { background: rgba(0,0,0,0.14); }
+
+.ci-topbar-title {
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.ci-type-tag {
+    display: inline-flex; align-items: center; gap: .3rem;
+    background: rgba(0,0,0,0.08);
+    color: #5a3e00;
+    font-size: .72rem; font-weight: 600;
+    padding: .25rem .65rem;
+    border-radius: 100px;
+}
+.ci-type-tag ion-icon { font-size: .8rem; }
+
+/* ── Zone principale ── */
+.ci-body {
+    padding: 1.5rem 1.25rem 7rem;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+/* ── Titre ── */
+.ci-title {
+    font-family: 'Caveat', cursive;
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.15;
+    margin-bottom: .5rem;
+}
+
+/* Trait jaune sous le titre */
+.ci-title-underline {
+    width: 52px;
+    height: 5px;
+    background: #f6e7b4;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+/* ── Méta ── */
+.ci-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-bottom: 1.75rem;
+}
+.ci-meta-pill {
+    display: inline-flex; align-items: center; gap: .35rem;
+    background: #f6e7b4;
+    border-radius: 100px;
+    font-size: .73rem;
+    color: #7a5c00;
+    font-weight: 500;
+    padding: .28rem .7rem;
+}
+.ci-meta-pill ion-icon { font-size: .8rem; color: #c49a00; }
+
+/* ── Polaroid ── */
+.ci-polaroid {
+    background: #fff;
+    padding: 10px 10px 42px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.10), 0 8px 24px rgba(0,0,0,.07);
+    border-radius: 4px;
+    transform: rotate(-1.2deg);
+    transition: transform .3s;
+    max-width: 360px;
+    margin: 0 auto;
+}
+.ci-polaroid:hover { transform: rotate(0deg) scale(1.01); }
+
+.ci-polaroid-img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+    background: #f0f0f0;
+}
+
+.ci-polaroid-caption {
+    text-align: center;
+    margin-top: 10px;
+    font-family: 'Caveat', cursive;
+    font-size: 1.4rem;
+    color: #555;
+    font-weight: 500;
+    min-height: 20px;
+}
+
+/* Ruban adhésif décoratif */
+.ci-tape {
+    width: 60px; height: 22px;
+    background: rgba(246, 231, 180, 0.75);
+    border-radius: 2px;
+    position: absolute;
+    top: -11px; left: 50%;
+    transform: translateX(-50%) rotate(-1deg);
+}
+
+.ci-polaroid-wrap {
+    position: relative;
+    padding-top: 16px;
+    background: #fdf5d8;
+    border-radius: 20px;
+    padding: 28px 24px 24px;
+}
+
+/* ── Vidéo style polaroid ── */
+.ci-polaroid-video {
+    background: #fff;
+    padding: 10px 10px 42px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.10), 0 8px 24px rgba(0,0,0,.07);
+    border-radius: 4px;
+    transform: rotate(.8deg);
+    max-width: 360px;
+    margin: 0 auto;
+}
+.ci-polaroid-video video {
+    width: 100%; display: block;
+}
+
+/* ── Audio card ── */
+.ci-audio-wrap {
+    background: #f6e7b4;
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+}
+.ci-audio-disc {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; color: #c49a00;
+    box-shadow: 0 4px 16px rgba(196,154,0,.2);
+}
+.ci-audio-label {
+    font-family: 'Caveat', cursive;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #3a2d00;
+    text-align: center;
+}
+.ci-audio-wrap audio { width: 100%; }
+
+/* ── Note card ── */
+.ci-note-wrap {
+    background: #f6e7b4;
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    position: relative;
+}
+.ci-note-quote {
+    font-size: 5rem;
+    line-height: 1;
+    color: rgba(196,154,0,.2);
+    font-family: Georgia, serif;
+    position: absolute;
+    top: .4rem; left: 1.25rem;
+    pointer-events: none;
+}
+.ci-note-text {
+    font-family: 'Caveat', cursive;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #3a2d00;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Modale ── */
+.ci-modal {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,.9);
+    align-items: center; justify-content: center; padding: 1rem;
+}
+.ci-modal.open { display: flex; }
+.ci-modal img {
+    max-width: 100%; max-height: 90vh;
+    border-radius: 4px; display: block;
+    box-shadow: 0 4px 32px rgba(0,0,0,.5);
+}
+.ci-modal-x {
+    position: fixed; top: .9rem; right: .9rem;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,.15); border: none;
+    color: #fff; font-size: 1.3rem; cursor: pointer; z-index: 201;
+    display: flex; align-items: center; justify-content: center;
+}   

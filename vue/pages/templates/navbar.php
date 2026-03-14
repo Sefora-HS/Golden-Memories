@@ -34,7 +34,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 </li>
 
 <li class="list <?= ($current_page == 'capsules.php') ? 'active' : '' ?>">
-    <a href="<?= ($current_page == 'capsules.php') ? '#' : BASE_URL . 'capsules.php' ?>">
+    <a href="<?= ($current_page == 'capsules.php') ? '#' : BASE_URL . '/vue/pages/capsules.php' ?>">
         <span class="icon"><ion-icon name="time-outline"></ion-icon></span>
         <p>Capsules</p>
     </a>
