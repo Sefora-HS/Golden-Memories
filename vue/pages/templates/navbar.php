@@ -7,7 +7,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <ul>
 
 <li class="list <?= ($current_page == 'albums.php') ? 'active' : '' ?>">
-    <a href="<?= ($current_page == 'albums.php') ? '#' : BASE_URL . 'albums.php' ?>">
+    <a href="<?= ($current_page == 'albums.php') ? '#' : BASE_URL . '/vue/pages/albums.php' ?>">
         <span class="icon"><ion-icon name="images-outline"></ion-icon></span>
         <p>Albums</p>
     </a>
@@ -27,14 +27,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
 </li>
 
 <li class="list <?= ($current_page == 'partages.php') ? 'active' : '' ?>">
-    <a href="<?= ($current_page == 'partages.php') ? '#' : BASE_URL . 'partages.php' ?>">
+    <a href="<?= ($current_page == 'partages.php') ? '#' : BASE_URL . '/vue/pages/partages.php' ?>">
         <span class="icon"><ion-icon name="people-outline"></ion-icon></span>
         <p>Partages</p>
     </a>
 </li>
 
 <li class="list <?= ($current_page == 'capsules.php') ? 'active' : '' ?>">
-    <a href="<?= ($current_page == 'capsules.php') ? '#' : BASE_URL . 'capsules.php' ?>">
+    <a href="<?= ($current_page == 'capsules.php') ? '#' : BASE_URL . '/vue/pages/capsules.php' ?>">
         <span class="icon"><ion-icon name="time-outline"></ion-icon></span>
         <p>Capsules</p>
     </a>
