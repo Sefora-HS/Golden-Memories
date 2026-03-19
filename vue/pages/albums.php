@@ -54,7 +54,7 @@ $albums = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     <?php else: ?>
         <?php foreach ($albums as $album): ?>
-        <div class="album-card">
+        <a href="<?= BASE_URL ?>/vue/pages/myalbum.php?id=<?= (int)$album['id'] ?>" class="album-card">
 
             <?php if ($album['cover_image']): ?>
                 <img
@@ -90,7 +90,7 @@ $albums = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
 
             </div>
-        </div>
+            </a>
         <?php endforeach; ?>
     <?php endif; ?>
 </div>
