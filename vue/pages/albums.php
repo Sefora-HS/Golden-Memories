@@ -39,11 +39,13 @@ $albums = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
 
+<!-- inclusion du header -->
 <?php include './templates/header.php'; ?>
 
 <h1 class="title">Mes Albums</h1>
 <p class="soustitre">"Organisez tous vos souvenirs ici !"</p>
 
+<!-- affichage des albums sous forme de bloc contenant l'image du premier souvenir importé, le titre, le nom de l'utilisateur, la date de création, et le nombre de souvenir -->
 <div class="albums-grid">
     <?php if (empty($albums)): ?>
         <div class="albums-empty">
@@ -95,6 +97,7 @@ $albums = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <?php include './templates/navbar.php'; ?>
 
+<script src="<?= BASE_URL ?>/vue/assets/js/app.js?v=<?= time() ?>"></script>
 <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </body>

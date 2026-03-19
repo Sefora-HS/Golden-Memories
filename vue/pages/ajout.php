@@ -1,33 +1,72 @@
 <?php
+//import du fichier config
 require_once '../../modele/config.php';
 
+//Vérification si un utilisateur est connecté sinon redirection vers la page d'accueil
 if (!isset($_SESSION['user'])) {
     header('Location: ' . BASE_URL . '/vue/pages/home.php');
     exit;
 }
 
+//Récupération + stockage des informations et id de l'utilisateur pour les requêtes
 $userConnecte = $_SESSION['user'];
 $userId = $userConnecte['id'];
+
+// préparer une requête SQL de manière sécurisés pour récupérer les albums de l'utilisateur
+$stmtAlbums = $bdd->prepare("SELECT id, title FROM albums WHERE user_id = :uid ORDER BY created_at DESC");
+$stmtAlbums->execute([':uid' => $userId]);
+$albums = $stmtAlbums->fetchAll(PDO::FETCH_ASSOC);
+
+// Création d'un album via AJAX
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_album_title'])) {
+    //récupération du titre entré par l'utilisateur
+    $newAlbumTitle = trim($_POST['new_album_title']);
+    if (!empty($newAlbumTitle)) { 
+        $stmtAlbum = $bdd->prepare("
+            INSERT INTO albums (user_id, title, nbr_memories)
+            VALUES (:uid, :title, 0)
+        ");
+        $stmtAlbum->execute([':uid' => $userId, ':title' => $newAlbumTitle]);
+        $newId = $bdd->lastInsertId();
+        echo json_encode(['success' => true, 'id' => $newId, 'title' => $newAlbumTitle]);
+    } else {
+        //si aucun titre, empêche la création de l'album
+        echo json_encode(['success' => false]);
+    }
+    exit;
+}
 
 $success = '';
 $erreur  = '';
 
+//attribution des valeurs saisie dans le formulaire a des variables
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $type    = $_POST['type'] ?? '';
-    $title   = trim($_POST['title'] ?? '');
-    $content = trim($_POST['content'] ?? '');
+    $type          = $_POST['type'] ?? '';
+    $title         = trim($_POST['title'] ?? '');
+    $content       = trim($_POST['content'] ?? '');
+    $albumId       = !empty($_POST['album_id']) ? (int)$_POST['album_id'] : null;
+    $isCapsule     = isset($_POST['is_capsule']) && $_POST['is_capsule'] === '1';
+    $capsuleTitle  = trim($_POST['capsule_title'] ?? '');
+    $unlockAt      = trim($_POST['unlock_at'] ?? '');
 
+    //autorise les photos, videos, audios et notes
     $allowedTypes = ['photo', 'video', 'audio', 'note'];
 
+    //gestion des erreurs avec message à afficher associer
     if (!in_array($type, $allowedTypes)) {
         $erreur = 'Type de souvenir invalide.';
     } elseif ($type === 'note' && empty($content)) {
         $erreur = 'Le contenu de la note est obligatoire.';
     } elseif ($type !== 'note' && empty($_FILES['file']['name'])) {
         $erreur = 'Veuillez sélectionner un fichier.';
+    } elseif ($isCapsule && empty($unlockAt)) {
+        $erreur = 'Veuillez choisir une date d\'ouverture pour la capsule.';
+    } elseif ($isCapsule && strtotime($unlockAt) <= time()) {
+        $erreur = 'La date d\'ouverture doit être dans le futur.';
     } else {
         $filePath = null;
 
+        // extensions autorisés à être importé en dehors des notes 
         if ($type !== 'note') {
             $file     = $_FILES['file'];
             $ext      = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
@@ -37,11 +76,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'audio' => ['mp3','wav','ogg','m4a'],
             ];
 
+            // gestion des erreurs , taille, format...
             if (!in_array($ext, $allowed[$type])) {
                 $erreur = 'Format de fichier non supporté.';
             } elseif ($file['size'] > 1000 * 1024 * 1024) {
                 $erreur = 'Fichier trop lourd (max 50 Mo).';
             } else {
+                //création d'un chemin dans le dossier uploads pour ajouter le souvenir
                 $uploadDir = __DIR__ . '/../../uploads/';
                 if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
                 $newName  = uniqid('mem_') . '.' . $ext;
@@ -56,17 +97,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (!$erreur) {
+            // Insertion du souvenir dans la base de données, si aucune erreur détéctée
             $stmt = $bdd->prepare("
-                INSERT INTO memories (user_id, type, title, file_path, content)
-                VALUES (:uid, :type, :title, :file_path, :content)
+                INSERT INTO memories (user_id, album_id, type, title, file_path, content)
+                VALUES (:uid, :album_id, :type, :title, :file_path, :content)
             ");
             $stmt->execute([
                 ':uid'       => $userId,
+                ':album_id'  => $albumId,
                 ':type'      => $type,
                 ':title'     => $title ?: null,
                 ':file_path' => $filePath,
                 ':content'   => $content ?: null,
             ]);
+
+            //on récupère l'id du souvenir que l'on vient de créer 
+            $memoryId = $bdd->lastInsertId();
+
+            // Mise à jour du compteur album, si le souvenir appartient à un album
+            if ($albumId) {
+                $bdd->prepare("UPDATE albums SET nbr_memories = nbr_memories + 1 WHERE id = :id")
+                    ->execute([':id' => $albumId]);
+            }
+
+            // Création de la capsule temporelle si l'utilisateur a selectionné l'option 
+            if ($isCapsule) {
+                $stmtCap = $bdd->prepare("
+                    INSERT INTO time_capsules (memory_id, capsule_title, unlock_at, is_open)
+                    VALUES (:memory_id, :capsule_title, :unlock_at, 0)
+                ");
+                $stmtCap->execute([
+                    ':memory_id'     => $memoryId,
+                    ':capsule_title' => $capsuleTitle ?: ($title ?: null),
+                    ':unlock_at'     => $unlockAt,
+                ]);
+            }
+
+            //redirection vers la page d'accueil une fois le souvenir crée 
             header('Location: ' . BASE_URL . '/index.php?added=1');
             exit;
         }
@@ -78,11 +145,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../assets/css/app.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/vue/assets/css/app.css?v=<?= time() ?>">
     <title>Golden Memories</title>
 </head>
 <body>
 
+<!-- inclusion du template header -->
 <?php include './templates/header.php'; ?>
 
 <div class="ajout-page">
@@ -94,49 +162,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1 class="form-title">Nouveau souvenir</h1>
     </div>
 
+    <!-- affichage des erreurs ici si il y'en a une  -->
     <?php if ($erreur): ?>
         <p class="form-error"><?= htmlspecialchars($erreur) ?></p>
     <?php endif; ?>
 
-    <!-- Sélecteur de type -->
+    <!-- boutons pour la création de souvenir -->
     <div class="type-grid" id="type-grid">
+        <!-- photos -->
         <button class="type-card" data-type="photo" onclick="selectType('photo')">
-            <div class="type-icon">
-                <ion-icon name="image-outline"></ion-icon>
-            </div>
+            <div class="type-icon"><ion-icon name="image-outline"></ion-icon></div>
             <span>Photo</span>
         </button>
+        <!-- videos -->
         <button class="type-card" data-type="video" onclick="selectType('video')">
-            <div class="type-icon">
-                <ion-icon name="videocam-outline"></ion-icon>
-            </div>
+            <div class="type-icon"><ion-icon name="videocam-outline"></ion-icon></div>
             <span>Vidéo</span>
         </button>
+        <!-- audio -->
         <button class="type-card" data-type="audio" onclick="selectType('audio')">
-            <div class="type-icon">
-                <ion-icon name="musical-notes-outline"></ion-icon>
-            </div>
+            <div class="type-icon"><ion-icon name="musical-notes-outline"></ion-icon></div>
             <span>Audio</span>
         </button>
+        <!-- note -->
         <button class="type-card" data-type="note" onclick="selectType('note')">
-            <div class="type-icon">
-                <ion-icon name="document-text-outline"></ion-icon>
-            </div>
+            <div class="type-icon"><ion-icon name="document-text-outline"></ion-icon></div>
             <span>Note</span>
         </button>
     </div>
 
-    <!-- Formulaire (caché jusqu'à sélection) -->
+    <!-- formulaire pour la création de souvenir caché par default -->
     <form method="POST" enctype="multipart/form-data" id="ajout-form" class="ajout-form hidden">
         <input type="hidden" name="type" id="input-type">
 
-        <!-- Titre (optionnel) -->
+        <!-- titre du souvenir optionnel -->
         <div class="form-group">
             <label>Titre <span class="optional">(optionnel)</span></label>
             <input type="text" name="title" placeholder="Donnez un titre à ce souvenir" value="<?= htmlspecialchars($_POST['title'] ?? '') ?>">
         </div>
 
-        <!-- Zone fichier (photo / video / audio) -->
+        <!-- zone de fichier , pour pouvoir importer caché par default-->
         <div id="file-zone" class="file-zone hidden">
             <label class="file-drop" id="file-label" for="file-input">
                 <ion-icon name="cloud-upload-outline" id="upload-icon"></ion-icon>
@@ -146,15 +211,101 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="file" name="file" id="file-input" class="hidden" onchange="previewFile(this)">
         </div>
 
-        <!-- Zone note -->
+       <!-- zone pour inscrire une note caché par default -->
         <div id="note-zone" class="form-group hidden">
             <label>Votre note</label>
             <textarea name="content" id="note-content" class="note-textarea" placeholder="Écrivez votre souvenir ici…" rows="6"><?= htmlspecialchars($_POST['content'] ?? '') ?></textarea>
         </div>
 
-        <!-- Prévisualisation -->
+       <!-- zone de prévisualisation caché par default, disponible une fois le souvenir importé -->
         <div id="preview-zone" class="preview-zone hidden"></div>
 
+       <!-- affichage et création des albums pour attribuer ou non un souvenir à un album -->
+        <?php if (!empty($albums)): ?>
+        <div class="extra-section">
+            <!-- bouton qui permet d'ouvrir la div album-block -->
+            <button type="button" class="extra-toggle" onclick="toggleExtra('album-block')">
+                <div class="extra-toggle-left">
+                    <div class="extra-toggle-icon"><ion-icon name="albums-outline"></ion-icon></div>
+                    <div>
+                        <p class="extra-toggle-label">Ajouter à un album</p>
+                        <p class="extra-toggle-sub" id="album-sub">Aucun album sélectionné</p>
+                    </div>
+                </div>
+                <ion-icon name="chevron-forward-outline" class="extra-chevron" id="chevron-album"></ion-icon>
+            </button>
+            <!-- affichage des albums deja crée, par default en surbriance "aucun album" -->
+            <div id="album-block" class="extra-block hidden">
+                <div class="album-list">
+                    <label class="album-option">
+                        <input type="radio" name="album_id" value="" onchange="updateAlbumSub(this)" checked>
+                        <span class="album-option-content">
+                            <ion-icon name="close-circle-outline"></ion-icon>
+                            Aucun album
+                        </span>
+                    </label>
+                    <!-- affichage des album de l'utilisateur -->
+                    <?php foreach ($albums as $album): ?>
+                    <label class="album-option">
+                        <input type="radio" name="album_id" value="<?= $album['id'] ?>"
+                               onchange="updateAlbumSub(this, '<?= htmlspecialchars($album['title']) ?>')">
+                        <span class="album-option-content">
+                            <ion-icon name="albums-outline"></ion-icon>
+                            <?= htmlspecialchars($album['title']) ?>
+                        </span>
+                    </label>
+                    <?php endforeach; ?>
+                </div>
+                <!-- création d'un album -->
+                <div class="new-album-wrap">
+                    <!-- nom -->
+                    <input type="text" id="new-album-input" placeholder="Nom du nouvel album…" class="new-album-input">
+                    <!-- bouton de création -->
+                    <button type="button" onclick="createAlbum()" class="new-album-btn">
+                        <ion-icon name="add-outline"></ion-icon>
+                        Créer
+                    </button>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <!-- Zone pour créer une capsule temporelle -->
+        <div class="extra-section">
+            <!-- bouton toggle qui permet d'afficher le formulaire de création si selectionné, sur off par default -->
+            <button type="button" class="extra-toggle" onclick="toggleCapsule()">
+                <div class="extra-toggle-left">
+                    <div class="extra-toggle-icon capsule-icon-bg"><ion-icon name="time-outline"></ion-icon></div>
+                    <div>
+                        <p class="extra-toggle-label">Créer une capsule temporelle</p>
+                        <p class="extra-toggle-sub" id="capsule-sub">Ce souvenir s'ouvrira à une date choisie</p>
+                    </div>
+                </div>
+                <div class="toggle-switch" id="capsule-toggle-switch">
+                    <div class="toggle-thumb"></div>
+                </div>
+            </button>
+
+            <!-- div affiché si toggle sur on -->
+            <div id="capsule-block" class="extra-block hidden">
+                <input type="hidden" name="is_capsule" id="is-capsule-input" value="0">
+                <div class="form-group" style="margin-bottom:.75rem;">
+                    <!-- nom de la capsule -->
+                    <label>Nom de la capsule <span class="optional">(optionnel)</span></label>
+                    <input type="text" name="capsule_title" placeholder="Ex : Été 2025 🌸"
+                           value="<?= htmlspecialchars($_POST['capsule_title'] ?? '') ?>">
+                </div>
+                <!-- selection de la date d'ouverture -->
+                <div class="form-group">
+                    <label>Date d'ouverture</label>
+                    <input type="datetime-local" name="unlock_at" id="unlock-at"
+                           min="<?= date('Y-m-d\TH:i') ?>"
+                           value="<?= htmlspecialchars($_POST['unlock_at'] ?? '') ?>">
+                </div>
+            </div>
+        </div>
+
+        <!-- bouton submit qui permet d'enregistrer le souvenir -->
         <button type="submit" class="btn-primary ajout-submit">
             <ion-icon name="checkmark-outline"></ion-icon>
             Enregistrer le souvenir
@@ -163,294 +314,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </div>
 
+<!-- inclusion de la navbar -->
 <?php include './templates/navbar.php'; ?>
 
-<script>
-const acceptMap = {
-    photo: 'image/*',
-    video: 'video/*',
-    audio: 'audio/*',
-};
-
-const iconMap = {
-    photo: 'image-outline',
-    video: 'videocam-outline',
-    audio: 'musical-notes-outline',
-    note:  'document-text-outline',
-};
-
-function selectType(type) {
-    // Highlight sélection
-    document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
-    document.querySelector(`[data-type="${type}"]`).classList.add('selected');
-
-    document.getElementById('input-type').value = type;
-
-    const form      = document.getElementById('ajout-form');
-    const fileZone  = document.getElementById('file-zone');
-    const noteZone  = document.getElementById('note-zone');
-    const preview   = document.getElementById('preview-zone');
-    const fileInput = document.getElementById('file-input');
-
-    form.classList.remove('hidden');
-    preview.classList.add('hidden');
-    preview.innerHTML = '';
-
-    if (type === 'note') {
-        fileZone.classList.add('hidden');
-        noteZone.classList.remove('hidden');
-        fileInput.removeAttribute('name');
-    } else {
-        noteZone.classList.add('hidden');
-        fileZone.classList.remove('hidden');
-        fileInput.setAttribute('name', 'file');
-        fileInput.setAttribute('accept', acceptMap[type]);
-
-        const icon = document.getElementById('upload-icon');
-        icon.setAttribute('name', iconMap[type]);
-
-        const labels = {
-            photo: 'Importer une photo',
-            video: 'Importer une vidéo',
-            audio: 'Importer un audio',
-        };
-        document.getElementById('upload-text').textContent = labels[type];
-        document.getElementById('file-name').textContent = '';
-    }
-
-    // Scroll vers le formulaire
-    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function previewFile(input) {
-    if (!input.files || !input.files[0]) return;
-    const file    = input.files[0];
-    const type    = document.getElementById('input-type').value;
-    const preview = document.getElementById('preview-zone');
-    const url     = URL.createObjectURL(file);
-
-    document.getElementById('file-name').textContent = file.name;
-
-    preview.innerHTML = '';
-    preview.classList.remove('hidden');
-
-    if (type === 'photo') {
-        const img = document.createElement('img');
-        img.src = url;
-        img.className = 'preview-img';
-        preview.appendChild(img);
-    } else if (type === 'video') {
-        const vid = document.createElement('video');
-        vid.src = url;
-        vid.controls = true;
-        vid.className = 'preview-video';
-        preview.appendChild(vid);
-    } else if (type === 'audio') {
-        const aud = document.createElement('audio');
-        aud.src = url;
-        aud.controls = true;
-        aud.className = 'preview-audio';
-        preview.appendChild(aud);
-    }
-}
-
-// Clic sur la zone = ouvre le file picker
-document.getElementById('file-label').addEventListener('click', () => {
-    document.getElementById('file-input').click();
-});
-</script>
-
-<style>
-.ajout-page {
-    padding: 0 1.5rem 120px;
-    display: flex;
-    flex-direction: column;
-    gap: 1.8rem;
-}
-
-/* Grille de sélection */
-.type-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-}
-
-.type-card {
-    background: #fff;
-    border: 2px solid transparent;
-    border-radius: 20px;
-    padding: 1.6rem 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    transition: border-color .2s, transform .15s, box-shadow .2s;
-    box-shadow: 0 2px 12px rgba(255, 221, 87, 0.15);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #2c2c2c;
-}
-
-.type-card:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 20px rgba(255, 221, 87, 0.35);
-}
-
-.type-card.selected {
-    border-color: #f6e7b4;
-    background: #fffdf0;
-    box-shadow: 0 4px 20px rgba(255, 221, 87, 0.4);
-}
-
-.type-icon {
-    width: 58px;
-    height: 58px;
-    border-radius: 16px;
-    background: #f6e7b4;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.8rem;
-    color: #2c2c2c;
-    transition: transform .2s;
-}
-
-.type-card.selected .type-icon {
-    background: #2c2c2c;
-    color: #f6e7b4;
-    transform: scale(1.05);
-}
-
-/* Formulaire */
-.ajout-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
-    animation: fadeSlideUp .3s ease;
-}
-
-.ajout-form.hidden {
-    display: none;
-}
-
-@keyframes fadeSlideUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-.hidden { display: none !important; }
-
-.optional {
-    opacity: .45;
-    font-size: .8rem;
-}
-
-/* Zone d'upload */
-.file-zone { display: flex; flex-direction: column; gap: .5rem; }
-
-.file-drop {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    background: #fff;
-    border: 2px dashed #f6e7b4;
-    border-radius: 20px;
-    padding: 2.5rem 1rem;
-    cursor: pointer;
-    color: #2c2c2c;
-    font-size: 1rem;
-    transition: background .2s, border-color .2s;
-}
-
-.file-drop:hover {
-    background: #fffdf0;
-    border-color: #e0c84a;
-}
-
-.file-drop ion-icon {
-    font-size: 2.5rem;
-    color: #2c2c2c;
-    opacity: .5;
-}
-
-.file-name {
-    font-size: .8rem;
-    opacity: .5;
-    max-width: 90%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* Note textarea */
-.note-textarea {
-    background: #fff;
-    border: none;
-    border-radius: 16px;
-    padding: 1rem;
-    font-size: 1.1rem;
-    font-family: 'Caveat', cursive;
-    color: #2c2c2c;
-    outline: none;
-    resize: none;
-    box-shadow: 0 0 10px rgba(255, 221, 87, 0.2);
-    line-height: 1.6;
-    min-height: 160px;
-}
-
-.note-textarea:focus {
-    box-shadow: 0 0 0 2px #f6e7b4;
-}
-
-.note-textarea::placeholder { color: #ccc; }
-
-/* Prévisualisation */
-.preview-zone {
-    border-radius: 16px;
-    overflow: hidden;
-    background: #1a1a2e;
-}
-
-.preview-img, .preview-video {
-    width: 100%;
-    max-height: 320px;
-    object-fit: cover;
-    display: block;
-}
-
-.preview-audio {
-    width: 100%;
-    padding: 12px;
-}
-
-/* Bouton submit */
-.ajout-submit {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    margin-top: .4rem;
-}
-
-.ajout-submit ion-icon { font-size: 1.2rem; }
-
-/* Erreur */
-.form-error {
-    background: #ffe0e0;
-    color: #c0392b;
-    padding: .8rem 1rem;
-    border-radius: 12px;
-    font-size: .9rem;
-}
-</style>
-
+<script src="<?= BASE_URL ?>/vue/assets/js/app.js?v=<?= time() ?>"></script>
 <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </body>
