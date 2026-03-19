@@ -17,9 +17,12 @@ $stmt = $bdd->prepare("
     SELECT m.*, a.title as album_title 
     FROM memories m
     LEFT JOIN albums a ON m.album_id = a.id
+    LEFT JOIN time_capsules tc ON tc.memory_id = m.id
     WHERE m.user_id = :user_id
+      AND (tc.id IS NULL OR tc.is_open = 1)
     ORDER BY m.created_at DESC
 ");
+
 $stmt->execute([':user_id' => $userId]);
 $souvenirs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
