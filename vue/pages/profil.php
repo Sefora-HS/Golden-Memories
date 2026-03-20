@@ -23,8 +23,8 @@ if (isset($_SESSION['user']['id'])) {
     $stmtAlbums->execute([':id' => $userId]);
     $nbAlbums = $stmtAlbums->fetchColumn();
 
-    // Compte le nombre d'amis de l'utilisateur
-    $stmtAmis = $bdd->prepare("SELECT COUNT(*) FROM friends WHERE user_id = :id");
+    // Compte uniquement les amis acceptés
+    $stmtAmis = $bdd->prepare("SELECT COUNT(*) FROM friends WHERE user_id = :id AND status = 'accepted'");
     $stmtAmis->execute([':id' => $userId]);
     $nbAmis = $stmtAmis->fetchColumn();
 
@@ -51,11 +51,15 @@ if (isset($_SESSION['user']['id'])) {
         <a href="<?= BASE_URL ?>" class="form-back">
             <ion-icon name="arrow-back-outline"></ion-icon>
         </a>
-        <!-- Affiche le @ de l'utilisateur connecté -->
         <p class="profil-arobase">@<?= htmlspecialchars($userConnecte['username'] ?? 'utilisateur') ?></p>
-        <a href="./parametres.php" class="parametre">
-            <ion-icon name="cog-outline"></ion-icon>
-        </a>
+        <div class="profil-top-actions">
+            <a href="<?= BASE_URL ?>/vue/pages/amis.php" class="parametre">
+                <ion-icon name="person-add-outline"></ion-icon>
+            </a>
+            <a href="./parametres.php" class="parametre">
+                <ion-icon name="cog-outline"></ion-icon>
+            </a>
+        </div>
     </div>
 
     <!-- Photo de profil + nom -->
@@ -78,11 +82,10 @@ if (isset($_SESSION['user']['id'])) {
             <span class="stat-nombre"><?= $nbAlbums ?></span>
             <span class="stat-label">Albums</span>
         </div>
-        <div class="profil-stat">
-            <!-- Affiche le nombre d'amis de l'utilisateur -->
+        <a href="<?= BASE_URL ?>/vue/pages/liste_amis.php" class="profil-stat">
             <span class="stat-nombre"><?= $nbAmis ?></span>
             <span class="stat-label">Amis</span>
-        </div>
+        </a>
     </div>
 
     <!-- Grille de tous les souvenirs de l'utilisateur -->

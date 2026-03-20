@@ -1,11 +1,38 @@
-<?php include_once '../../modele/config.php'; ?>
+<?php
+require_once '../../modele/config.php';
 
+if (!isset($_SESSION['user'])) {
+    header('Location: ' . BASE_URL . '/vue/pages/home.php');
+    exit;
+}
+
+$userId = $_SESSION['user']['id'];
+
+// Récupère toutes les notifications de l'utilisateur connecté
+$stmt = $bdd->prepare("
+    SELECT n.*, u.username, u.picture 
+    FROM notifications n
+    LEFT JOIN users u ON n.from_user_id = u.id
+    WHERE n.user_id = :user_id
+    ORDER BY n.created_at DESC
+");
+$stmt->execute([':user_id' => $userId]);
+$notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Icônes par type de notification
+$icons = [
+    'friend_request' => 'person-add-outline',
+    'new_memory'     => 'image-outline',
+    'capsule_ready'  => 'time-outline',
+    'album_invite'   => 'people-outline',
+];
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../assets/css/app.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/vue/assets/css/app.css?v=<?= time() ?>">
     <title>Golden Memories — Notifications</title>
 </head>
 <body>
@@ -21,47 +48,41 @@
 
     <div class="notif-list">
 
-        <div class="notif-item notif-unread">
-            <div class="notif-icon">
-                <ion-icon name="heart-outline"></ion-icon>
-            </div>
-            <div class="notif-content">
-                <p class="notif-text"><strong>Léa</strong> a aimé votre souvenir</p>
-                <span class="notif-time">Il y a 5 min</span>
-            </div>
-            <div class="notif-dot"></div>
-        </div>
+        <?php if (empty($notifications)): ?>
+            <p class="amis-empty">Aucune notification pour l'instant 🔔</p>
 
-        <div class="notif-item notif-unread">
-            <div class="notif-icon">
-                <ion-icon name="people-outline"></ion-icon>
-            </div>
-            <div class="notif-content">
-                <p class="notif-text"><strong>Sefora</strong> a partagé un album avec vous</p>
-                <span class="notif-time">Il y a 1h</span>
-            </div>
-            <div class="notif-dot"></div>
-        </div>
+        <?php else: ?>
+            <?php foreach ($notifications as $notif): ?>
+                <div class="notif-item <?= $notif['is_read'] ? '' : 'notif-unread' ?>">
 
-        <div class="notif-item">
-            <div class="notif-icon">
-                <ion-icon name="chatbubble-outline"></ion-icon>
-            </div>
-            <div class="notif-content">
-                <p class="notif-text"><strong>Marie</strong> a commenté votre photo</p>
-                <span class="notif-time">Hier</span>
-            </div>
-        </div>
+                    <div class="notif-icon">
+                        <ion-icon name="<?= $icons[$notif['type']] ?? 'notifications-outline' ?>"></ion-icon>
+                    </div>
 
-        <div class="notif-item">
-            <div class="notif-icon">
-                <ion-icon name="time-outline"></ion-icon>
-            </div>
-            <div class="notif-content">
-                <p class="notif-text">Votre capsule <strong>"Été 2024"</strong> s'ouvre bientôt !</p>
-                <span class="notif-time">Il y a 2 jours</span>
-            </div>
-        </div>
+                    <div class="notif-content">
+                        <p class="notif-text"><?= htmlspecialchars($notif['content']) ?></p>
+                        <span class="notif-time"><?= date('d/m/Y à H:i', strtotime($notif['created_at'])) ?></span>
+
+                        <!-- Boutons accepter/refuser pour les demandes d'amis -->
+                        <?php if ($notif['type'] === 'friend_request'): ?>
+                            <div class="notif-actions">
+                                <a href="<?= BASE_URL ?>/controler/accept_friends.php?from=<?= $notif['from_user_id'] ?>&notif=<?= $notif['id'] ?>" class="notif-accept">
+                                    Accepter
+                                </a>
+                                <a href="<?= BASE_URL ?>/controler/decline_friends.php?from=<?= $notif['from_user_id'] ?>&notif=<?= $notif['id'] ?>" class="notif-refuse">
+                                    Refuser
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if (!$notif['is_read']): ?>
+                        <div class="notif-dot"></div>
+                    <?php endif; ?>
+
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
 
     </div>
 

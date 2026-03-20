@@ -1182,6 +1182,30 @@ body {
     flex-shrink: 0;
 }
 
+.notif-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.notif-accept {
+    background: #2c2c2c;
+    color: #f6e7b4;
+    padding: 0.4rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    text-decoration: none;
+}
+
+.notif-refuse {
+    background: #f0f0f0;
+    color: #888;
+    padding: 0.4rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    text-decoration: none;
+}
+
 /* capsules */
 
 .capsules-page {
@@ -1953,7 +1977,6 @@ body {
 }
 
 /* page du post */
-/* ── PAGE POST ── */
 
 .post-page {
     display: flex;
@@ -2238,4 +2261,148 @@ body {
     font-size: 0.9rem;
     font-weight: 600;
     color: #2c2c2c;
+}
+
+/* amis */
+
+.amis-search {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+}
+
+.amis-search-input {
+    flex: 1;
+    background: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 0.9rem 1rem;
+    font-size: 1rem;
+    font-family: 'DM Sans', sans-serif;
+    color: #2c2c2c;
+    outline: none;
+    box-shadow: 0 0 10px rgba(255, 221, 87, 0.2);
+}
+
+.amis-search-input::placeholder {
+    color: #ccc;
+}
+
+.amis-search-btn {
+    background: #2c2c2c;
+    border: none;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f6e7b4;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.amis-resultats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.amis-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: #fff;
+    padding: 0.8rem 1rem;
+    border-radius: 14px;
+    box-shadow: 0 0 10px rgba(255, 221, 87, 0.2);
+}
+
+.amis-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid #f6e7b4;
+}
+
+.amis-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.amis-username {
+    flex: 1;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #2c2c2c;
+}
+
+.amis-add-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #2c2c2c;
+    color: #f6e7b4;
+    border: none;
+    border-radius: 50px;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.8rem;
+    font-family: 'DM Sans', sans-serif;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.amis-deja {
+    font-size: 0.8rem;
+    color: #888;
+    font-style: italic;
+}
+
+.amis-empty {
+    text-align: center;
+    color: #888;
+    font-size: 0.85rem;
+    padding: 2rem 0;
+}
+.profil-amis-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0 1.5rem;
+    padding: 0.8rem;
+    background: #f6e7b4;
+    border-radius: 50px;
+    text-decoration: none;
+    color: #2c2c2c;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.profil-top-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.profil-top-actions .parametre {
+    font-size: 1.1rem;
+}
+.amis-delete-btn {
+    background: #f0f0f0;
+    border: none;
+    border-radius: 50%;
+    width: 2.2rem;
+    height: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    color: #e84040;
+    cursor: pointer;
+}
+a.profil-stat {
+    text-decoration: none;
+    color: inherit;
 }
