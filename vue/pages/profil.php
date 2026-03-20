@@ -28,8 +28,8 @@ if (isset($_SESSION['user']['id'])) {
     $stmtAmis->execute([':id' => $userId]);
     $nbAmis = $stmtAmis->fetchColumn();
 
-    // Récupère les photos de l'utilisateur depuis la db
-    $stmtPhotos = $bdd->prepare("SELECT file_path FROM memories WHERE user_id = :id AND type = 'photo' ORDER BY created_at DESC LIMIT 6");
+    // Récupère tous les souvenirs de l'utilisateur depuis la db
+    $stmtPhotos = $bdd->prepare("SELECT id, file_path, type FROM memories WHERE user_id = :id ORDER BY created_at ASC");
     $stmtPhotos->execute([':id' => $userId]);
     $photos = $stmtPhotos->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -85,12 +85,27 @@ if (isset($_SESSION['user']['id'])) {
         </div>
     </div>
 
-    <!-- Grille de photos -->
+    <!-- Grille de tous les souvenirs de l'utilisateur -->
     <div class="profil-grille">
         <?php if (empty($photos)): ?>
-            <p class="profil-empty">Rien à afficher pour le moment...<br>Poste ton premier souvenir !</p>        <?php else: ?>
+            <p class="profil-empty">Aucune photo pour l'instant. Poste ton premier souvenir !</p>
+        <?php else: ?>
             <?php foreach ($photos as $photo): ?>
-                <img src="<?= BASE_URL ?>/<?= htmlspecialchars($photo['file_path']) ?>" alt="Souvenir">
+                <a href="<?= BASE_URL ?>/vue/pages/post.php?id=<?= $photo['id'] ?>&from=profil">
+                    <?php if ($photo['type'] === 'photo'): ?>
+                        <img src="<?= BASE_URL ?>/<?= htmlspecialchars($photo['file_path']) ?>" alt="Souvenir">
+                    <?php elseif ($photo['type'] === 'video'): ?>
+                        <video src="<?= BASE_URL ?>/<?= htmlspecialchars($photo['file_path']) ?>"></video>
+                    <?php elseif ($photo['type'] === 'audio'): ?>
+                        <div class="profil-audio">
+                            <ion-icon name="musical-notes-outline"></ion-icon>
+                        </div>
+                    <?php elseif ($photo['type'] === 'note'): ?>
+                        <div class="profil-note">
+                            <ion-icon name="document-text-outline"></ion-icon>
+                        </div>
+                    <?php endif; ?>
+                </a>
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
