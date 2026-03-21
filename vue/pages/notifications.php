@@ -19,13 +19,15 @@ $stmt = $bdd->prepare("
 $stmt->execute([':user_id' => $userId]);
 $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Icônes par type de notification
-$icons = [
-    'friend_request' => 'person-add-outline',
-    'new_memory'     => 'image-outline',
-    'capsule_ready'  => 'time-outline',
-    'album_invite'   => 'people-outline',
-];
+// Récupère les aperçus des souvenirs partagés
+$apercus = [];
+foreach ($notifications as $notif) {
+    if ($notif['type'] === 'new_memory' && $notif['reference_id']) {
+        $stmtApercu = $bdd->prepare("SELECT type, file_path, content FROM memories WHERE id = :id");
+        $stmtApercu->execute([':id' => $notif['reference_id']]);
+        $apercus[$notif['reference_id']] = $stmtApercu->fetch(PDO::FETCH_ASSOC);
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -49,21 +51,45 @@ $icons = [
     <div class="notif-list">
 
         <?php if (empty($notifications)): ?>
-            <p class="amis-empty">Aucune notification pour l'instant 🔔</p>
+            <p class="amis-empty">Aucune notification pour l'instant</p>
 
         <?php else: ?>
             <?php foreach ($notifications as $notif): ?>
                 <div class="notif-item <?= $notif['is_read'] ? '' : 'notif-unread' ?>">
 
                     <div class="notif-icon">
-                        <ion-icon name="<?= $icons[$notif['type']] ?? 'notifications-outline' ?>"></ion-icon>
+                        <?php if (!empty($notif['picture'])): ?>
+                            <img src="<?= BASE_URL ?>/vue/assets/images/<?= htmlspecialchars($notif['picture']) ?>" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                        <?php else: ?>
+                            <img src="<?= BASE_URL ?>/vue/assets/images/default.jpg" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                        <?php endif; ?>
                     </div>
 
                     <div class="notif-content">
-                        <p class="notif-text"><?= htmlspecialchars($notif['content']) ?></p>
+                        <?php if ($notif['type'] === 'new_memory' && $notif['reference_id']): ?>
+                            <a href="<?= BASE_URL ?>/vue/pages/post.php?id=<?= $notif['reference_id'] ?>" class="notif-link">
+                                <p class="notif-text"><?= htmlspecialchars($notif['content']) ?></p>
+                                <?php if (isset($apercus[$notif['reference_id']])): ?>
+                                    <?php $apercu = $apercus[$notif['reference_id']]; ?>
+                                    <div class="notif-apercu">
+                                        <?php if ($apercu['type'] === 'photo' && $apercu['file_path']): ?>
+                                            <img src="<?= BASE_URL ?>/<?= htmlspecialchars($apercu['file_path']) ?>" alt="">
+                                        <?php elseif ($apercu['type'] === 'video'): ?>
+                                            <div class="notif-apercu-icon"><ion-icon name="videocam-outline"></ion-icon></div>
+                                        <?php elseif ($apercu['type'] === 'audio'): ?>
+                                            <div class="notif-apercu-icon"><ion-icon name="musical-notes-outline"></ion-icon></div>
+                                        <?php elseif ($apercu['type'] === 'note'): ?>
+                                            <div class="notif-apercu-note"><?= htmlspecialchars(substr($apercu['content'] ?? '', 0, 50)) ?>...</div>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
+                            </a>
+                        <?php else: ?>
+                            <p class="notif-text"><?= htmlspecialchars($notif['content']) ?></p>
+                        <?php endif; ?>
+
                         <span class="notif-time"><?= date('d/m/Y à H:i', strtotime($notif['created_at'])) ?></span>
 
-                        <!-- Boutons accepter/refuser pour les demandes d'amis -->
                         <?php if ($notif['type'] === 'friend_request'): ?>
                             <div class="notif-actions">
                                 <a href="<?= BASE_URL ?>/controler/accept_friends.php?from=<?= $notif['from_user_id'] ?>&notif=<?= $notif['id'] ?>" class="notif-accept">

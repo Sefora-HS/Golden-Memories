@@ -73,6 +73,13 @@ $comments = $stmtComments->fetchAll(PDO::FETCH_ASSOC);
     <title>Golden Memories — <?= htmlspecialchars($souvenir['title'] ?? 'Souvenir') ?></title>
 </head>
 <body>
+    <!-- Si partage--> 
+    <?php if (isset($_GET['shared'])): ?>
+        <div class="share-success">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+            Souvenir partagé avec succès !
+        </div>
+    <?php endif; ?>
 
 <div class="post-page">
 
@@ -131,9 +138,12 @@ $comments = $stmtComments->fetchAll(PDO::FETCH_ASSOC);
             <span><?= $nbComments ?></span>
         </button>
 
-        <button class="post-action-btn">
-            <ion-icon name="share-outline"></ion-icon>
-        </button>
+       <!-- Partager — uniquement pour le créateur -->
+        <?php if ($estCreateur): ?>
+            <button class="post-action-btn" onclick="toggleShare()">
+                <ion-icon name="share-outline"></ion-icon>
+            </button>
+        <?php endif; ?>
 
         <?php if ($estCreateur): ?>
             <button class="post-action-btn post-action-danger" onclick="showConfirm()">
@@ -228,9 +238,70 @@ function sendComment() {
         }
     });
 }
+    function toggleShare() {
+        document.getElementById('share-overlay').classList.toggle('visible');
+    }
+
+    function closeShare(e) {
+        if (e.target === document.getElementById('share-overlay')) {
+            document.getElementById('share-overlay').classList.remove('visible');
+        }
+    }
+
+    function filterAmis() {
+        const query = document.getElementById('share-search-input').value.toLowerCase();
+        document.querySelectorAll('.share-ami-item').forEach(item => {
+            const username = item.dataset.username.toLowerCase();
+            item.style.display = username.includes(query) ? 'flex' : 'none';
+        });
+    }
 </script>
 
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+<!-- Pop-up partage -->
+<div class="share-overlay" id="share-overlay" onclick="closeShare(event)">
+    <div class="share-panel" id="share-panel">
+        <div class="share-handle"></div>
+        <h3 class="share-title">Partager avec un ami</h3>
+
+        <!-- Recherche -->
+        <div class="share-search">
+            <input type="text" id="share-search-input" placeholder="Rechercher un ami..." oninput="filterAmis()">
+        </div>
+
+        <!-- Liste des amis -->
+        <div class="share-amis" id="share-amis">
+            <?php
+            // Récupère les amis acceptés
+            $stmtShareAmis = $bdd->prepare("
+                SELECT u.id, u.username, u.picture
+                FROM friends f
+                JOIN users u ON f.friend_id = u.id
+                WHERE f.user_id = :user_id AND f.status = 'accepted'
+                ORDER BY u.username ASC
+            ");
+            $stmtShareAmis->execute([':user_id' => $userId]);
+            $shareAmis = $stmtShareAmis->fetchAll(PDO::FETCH_ASSOC);
+            ?>
+
+            <?php if (empty($shareAmis)): ?>
+                <p class="share-empty">Tu n'as pas encore d'amis 👀</p>
+            <?php else: ?>
+                <?php foreach ($shareAmis as $ami): ?>
+                    <div class="share-ami-item" data-username="<?= htmlspecialchars($ami['username']) ?>">
+                        <div class="share-ami-avatar">
+                            <img src="<?= BASE_URL ?>/vue/assets/images/<?= htmlspecialchars($ami['picture'] ?? 'default.jpg') ?>" alt="">
+                        </div>
+                        <span class="share-ami-username">@<?= htmlspecialchars($ami['username']) ?></span>
+                        <a href="<?= BASE_URL ?>/controler/share_memory.php?memory_id=<?= $souvenir['id'] ?>&to=<?= $ami['id'] ?>" class="share-ami-btn">
+                            Envoyer
+                        </a>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
 </body>
 </html>

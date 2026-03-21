@@ -7,39 +7,37 @@ if (!isset($_SESSION['user'])) {
 }
 
 $userId = $_SESSION['user']['id'];
-$fromId = $_GET['from'] ?? null;
-$notifId = $_GET['notif'] ?? null;
+$friendId = $_GET['id'] ?? null;
+$recherche = $_GET['q'] ?? '';
 
-if (!$fromId) {
-    header('Location: ' . BASE_URL . '/vue/pages/notifications.php');
+if (!$friendId || $friendId == $userId) {
+    header('Location: ' . BASE_URL . '/vue/pages/amis.php');
     exit;
 }
 
-// Accepte la demande en mettant le status à accepted
-$stmt = $bdd->prepare("UPDATE friends SET status = 'accepted' WHERE user_id = :from_id AND friend_id = :user_id");
-$stmt->execute([':from_id' => $fromId, ':user_id' => $userId]);
+// Vérifie que la demande n'existe pas déjà
+$check = $bdd->prepare("SELECT id FROM friends WHERE user_id = :user_id AND friend_id = :friend_id");
+$check->execute([':user_id' => $userId, ':friend_id' => $friendId]);
 
-// Ajoute aussi l'amitié dans l'autre sens
-$check = $bdd->prepare("SELECT id FROM friends WHERE user_id = :user_id AND friend_id = :from_id");
-$check->execute([':user_id' => $userId, ':from_id' => $fromId]);
 if (!$check->fetch()) {
-    $insert = $bdd->prepare("INSERT INTO friends (user_id, friend_id, status) VALUES (:user_id, :from_id, 'accepted')");
-    $insert->execute([':user_id' => $userId, ':from_id' => $fromId]);
+    // Ajoute la demande en statut pending
+    $stmt = $bdd->prepare("INSERT INTO friends (user_id, friend_id, status) VALUES (:user_id, :friend_id, 'pending')");
+    $stmt->execute([':user_id' => $userId, ':friend_id' => $friendId]);
+
+    // Récupère le username de celui qui envoie la demande
+    $stmtUser = $bdd->prepare("SELECT username FROM users WHERE id = :id");
+    $stmtUser->execute([':id' => $userId]);
+    $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
+
+    // Crée une notification pour le destinataire
+    $stmtNotif = $bdd->prepare("INSERT INTO notifications (user_id, type, content, from_user_id) VALUES (:user_id, 'friend_request', :content, :from_user_id)");
+    $stmtNotif->execute([
+        ':user_id' => $friendId,
+        ':content' => '@' . $user['username'] . ' vous a envoyé une demande d\'ami',
+        ':from_user_id' => $userId
+    ]);
 }
 
-// Récupère le username de celui qui accepte
-$stmtUser = $bdd->prepare("SELECT username FROM users WHERE id = :id");
-$stmtUser->execute([':id' => $userId]);
-$userAccepte = $stmtUser->fetch(PDO::FETCH_ASSOC);
-
-// Met à jour la notification avec le nouveau message
-if ($notifId) {
-    $bdd->prepare("UPDATE notifications SET is_read = 1, content = :content WHERE id = :id")
-        ->execute([
-            ':content' => '@' . $userAccepte['username'] . ' est devenu(e) votre ami(e) !',
-            ':id' => $notifId
-        ]);
-}
-
-header('Location: ' . BASE_URL . '/vue/pages/notifications.php');
+// Redirige vers la recherche avec les résultats déjà affichés
+header('Location: ' . BASE_URL . '/vue/pages/amis.php?q=' . urlencode($recherche));
 exit;

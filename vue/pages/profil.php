@@ -64,9 +64,17 @@ if (isset($_SESSION['user']['id'])) {
 
     <!-- Photo de profil + nom -->
     <div class="profil-header">
-        <div class="profil-avatar">
-            <img src="<?= BASE_URL ?>/vue/assets/images/<?= htmlspecialchars($userConnecte['picture'] ?? 'default.jpg') ?>" alt="Photo de profil">
+    <div class="profil-avatar">
+    <label for="upload-pfp" class="profil-avatar-label">
+        <img src="<?= BASE_URL ?>/vue/assets/images/<?= htmlspecialchars($userConnecte['picture'] ?? 'default.jpg') ?>" alt="Photo de profil">
+        <div class="profil-avatar-overlay">
+            <ion-icon name="camera-outline"></ion-icon>
         </div>
+    </label>
+    <form action="<?= BASE_URL ?>/controler/update_pfp.php" method="POST" enctype="multipart/form-data" id="pfp-form">
+        <input type="file" name="picture" id="upload-pfp" accept="image/*" style="display:none" onchange="document.getElementById('pfp-form').submit()">
+    </form>
+</div>
         <!-- Affiche le nom de l'utilisateur connecté -->
         <h2 class="profil-nom"><?= htmlspecialchars($userConnecte['username'] ?? 'Utilisateur') ?></h2>
         <p class="profil-bio">✨ Collectionneuse de jolis souvenirs</p>
