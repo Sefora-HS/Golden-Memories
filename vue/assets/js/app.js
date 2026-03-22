@@ -125,28 +125,6 @@ function createAlbum() {
         });
 }
 
-function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
-    // Appliquer le thème
-    document.documentElement.setAttribute('data-theme', targetTheme);
-    
-    // Sauvegarder le choix
-    localStorage.setItem('theme', targetTheme);
-    
-    const status = document.getElementById('theme-status');
-    if(status) status.innerText = targetTheme === 'dark' ? 'Sombre' : 'Clair';
-}
-
-// Appliquer le thème sauvegardé au chargement de la page
-(function() {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    const status = document.getElementById('theme-status');
-    if(status) status.innerText = savedTheme === 'dark' ? 'Sombre' : 'Clair';
-})();
-
 
 // mise à jour de l'icône selon l'état du toggle de partage
     document.getElementById('new-album-shared')?.addEventListener('change', function () {

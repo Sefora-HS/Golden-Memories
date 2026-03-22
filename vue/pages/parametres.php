@@ -73,7 +73,7 @@
                 <span>Thème</span>
                 <small id="theme-status" style="margin-left: auto; opacity: 0.6;">Clair</small>
             </div>
-            
+
         </div>
 
         <div class="meta-section">
@@ -137,6 +137,29 @@
         // On réaffiche la liste principale
         document.getElementById('main-settings-view').style.display = 'block';
     }
+
+    function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    // Appliquer le thème
+    document.documentElement.setAttribute('data-theme', targetTheme);
+    
+    // Sauvegarder le choix
+    localStorage.setItem('theme', targetTheme);
+    
+    const status = document.getElementById('theme-status');
+    if(status) status.innerText = targetTheme === 'dark' ? 'Sombre' : 'Clair';
+}
+
+// Appliquer le thème sauvegardé au chargement de la page
+(function() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    const status = document.getElementById('theme-status');
+    if(status) status.innerText = savedTheme === 'dark' ? 'Sombre' : 'Clair';
+})();
+
 </script>
 
 </body>
