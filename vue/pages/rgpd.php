@@ -45,7 +45,11 @@
                 <p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données directement depuis les paramètres de l'application.</p>
             </section>
             
-            <a href="#" class="btn-download">Télécharger mes données personnelles</a>
+            <a href="../../controleur/export_data.php" class="btn-download">
+                    <ion-icon name="download-outline"></ion-icon>
+                    Télécharger mes données (JSON)
+            </a>
+            
         </div>
 
         <div class="auth-logo-img" style="padding-top: 2rem;">
