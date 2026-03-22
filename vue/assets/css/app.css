@@ -2838,3 +2838,80 @@ body {
     background-color: var(--card-bg);
     color: var(--text-color);
 }
+
+
+/* ── Capsules — classes dynamiques à ajouter ── */
+
+.capsule-badge-ready {
+    background: #fde8e8;
+    color: #e84040;
+}
+
+.capsule-card.capsule-ready {
+    border: 1px solid rgba(232, 64, 64, 0.2);
+}
+
+.capsule-section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin: 0.5rem 0.2rem 0.3rem;
+}
+
+.capsule-open-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: #e84040;
+    color: #fff;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.capsule-open-btn:hover { background: #c0392b; }
+
+.capsule-note-content {
+    background: #f6e7b4;
+    border-radius: 0 0 16px 16px;
+    padding: 12px 16px;
+    font-family: 'Caveat', cursive;
+    font-size: 1.1rem;
+    color: #2c2c2c;
+    line-height: 1.6;
+    margin-top: -0.8rem;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+}
+
+.capsule-media {
+    margin-top: -0.8rem;
+    margin-bottom: 0.8rem;
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+}
+.capsule-media video,
+.capsule-media audio {
+    width: 100%;
+    display: block;
+}
+
+.capsule-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #aaa;
+    font-size: 0.9rem;
+}
+.capsule-empty ion-icon {
+    font-size: 2.5rem;
+    opacity: 0.3;
+    display: block;
+    margin: 0 auto 0.8rem;
+}

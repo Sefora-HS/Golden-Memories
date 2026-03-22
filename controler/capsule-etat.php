@@ -1,0 +1,81 @@
+<?php
+include_once '../../modele/config.php';
+session_start();
+
+// Vérification session
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ' . BASE_URL . '/vue/pages/login.php');
+    exit;
+}
+
+$user_id = $_SESSION['user_id'];
+
+// ── Action : ouvrir une capsule ──
+if (isset($_GET['open']) && is_numeric($_GET['open'])) {
+    $capsule_id = (int) $_GET['open'];
+
+    $stmt = $pdo->prepare("
+        UPDATE time_capsules tc
+        JOIN memories m ON m.id = tc.memory_id
+        SET tc.is_open = 1
+        WHERE tc.id = :capsule_id
+          AND m.user_id = :user_id
+          AND tc.unlock_at <= NOW()
+          AND tc.is_open = 0
+    ");
+    $stmt->execute([':capsule_id' => $capsule_id, ':user_id' => $user_id]);
+    header('Location: ' . BASE_URL . '/vue/pages/capsules.php');
+    exit;
+}
+
+// ── Récupérer toutes les capsules de l'utilisateur ──
+$stmt = $pdo->prepare("
+    SELECT 
+        tc.id        AS capsule_id,
+        tc.unlock_at,
+        tc.is_open,
+        tc.created_at AS capsule_created,
+        m.id         AS memory_id,
+        m.title,
+        m.type,
+        m.file_path,
+        m.content,
+        TIMESTAMPDIFF(SECOND, NOW(), tc.unlock_at) AS seconds_left
+    FROM time_capsules tc
+    JOIN memories m ON m.id = tc.memory_id
+    WHERE m.user_id = :user_id
+    ORDER BY tc.unlock_at ASC
+");
+$stmt->execute([':user_id' => $user_id]);
+$capsules = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// ── Séparer en 4 groupes ──
+$capsules_ready  = []; // date passée, pas encore ouverte
+$capsules_soon   = []; // moins de 7 jours
+$capsules_locked = []; // date future lointaine
+$capsules_open   = []; // déjà ouvertes
+
+$seuil_bientot = 7 * 24 * 3600; // 7 jours en secondes
+
+foreach ($capsules as $c) {
+    if ($c['is_open']) {
+        $capsules_open[] = $c;
+    } elseif ($c['seconds_left'] <= 0) {
+        $capsules_ready[] = $c;
+    } elseif ($c['seconds_left'] <= $seuil_bientot) {
+        $capsules_soon[] = $c;
+    } else {
+        $capsules_locked[] = $c;
+    }
+}
+
+// ── Fonctions utilitaires ──
+function formatCountdown(int $seconds): string {
+    if ($seconds <= 0) return 'Maintenant';
+    $days    = floor($seconds / 86400);
+    $hours   = floor(($seconds % 86400) / 3600);
+    $minutes = floor(($seconds % 3600) / 60);
+    if ($days > 0)  return "Dans $days jour" . ($days > 1 ? 's' : '');
+    if ($hours > 0) return "Dans $hours heure" . ($hours > 1 ? 's' : '');
+    return "Dans $minutes minute" . ($minutes > 1 ? 's' : '');
+}

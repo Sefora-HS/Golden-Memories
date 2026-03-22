@@ -1,4 +1,4 @@
-<?php include_once '../../modele/config.php'; ?>
+<?php include_once '../../controler/capsules.php'; ?>
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -12,6 +12,7 @@
 
 <div class="capsules-page">
 
+    <!-- En-tête -->
     <div class="form-top">
         <a href="<?= BASE_URL ?>" class="form-back">
             <ion-icon name="arrow-back-outline"></ion-icon>
@@ -19,52 +20,121 @@
         <h1 class="form-title">Capsules</h1>
     </div>
 
-<div class="capsule-hero">
-<p class="capsule-hero-label">✦ Vos souvenirs temporels, qui viennent du futur</p>
-<p class="capsule-hero-sub">Des moments scellés dans le temps, qui s'ouvrent quand le moment est venu.</p>
-</div>
-    <!-- Capsule bientôt -->
-    <div class="capsule-card capsule-soon">
-        <div class="capsule-icon">
-            <ion-icon name="time-outline"></ion-icon>
-        </div>
-        <div class="capsule-info">
-            <h3 class="capsule-title">Fête de famille 🩷 </h3>
-            <p class="capsule-date">S'ouvre dans 3 jours</p>
-        </div>
-        <div class="capsule-badge capsule-badge-soon">Bientôt</div>
+    <!-- Hero -->
+    <div class="capsule-hero">
+        <p class="capsule-hero-label">✦ Vos souvenirs temporels</p>
+        <p class="capsule-hero-sub">Des moments scellés dans le temps, qui s'ouvrent quand le moment est venu.</p>
     </div>
 
-    <!-- Capsule verrouillée -->
-    <div class="capsule-card capsule-locked">
-        <div class="capsule-icon">
-            <ion-icon name="lock-closed-outline"></ion-icon>
+    <!-- État vide -->
+    <?php if (empty($capsules)): ?>
+        <div class="capsule-empty">
+            <ion-icon name="hourglass-outline"></ion-icon>
+            Aucune capsule pour l'instant.<br>Créez un souvenir et programmez son ouverture !
         </div>
-        <div class="capsule-info">
-            <h3 class="capsule-title">Été 2024 🌸</h3>
-            <p class="capsule-date">S'ouvre le 21 juin 2025</p>
-        </div>
-        <div class="capsule-badge capsule-badge-locked">Verrouillée</div>
-    </div>
+    <?php endif; ?>
 
-    <!-- Capsule ouverte -->
-    <div class="capsule-card capsule-open">
-        <div class="capsule-icon">
-            <ion-icon name="star-outline"></ion-icon>
-        </div>
-        <div class="capsule-info">
-            <h3 class="capsule-title">Voyage à Rome 🇮🇹</h3>
-            <p class="capsule-date">Ouverte depuis le 1er janvier 2025</p>
-        </div>
-        <div class="capsule-badge capsule-badge-open">Ouverte</div>
-    </div>
 
-    <!-- Photos de la capsule ouverte -->
-    <div class="capsule-photos">
-        <img src="../assets/images/neige.png" alt="">
-        <img src="../assets/images/drink.jfif" alt="">
-        <img src="../assets/images/plane.jfif" alt="">
-    </div>
+    <!-- ── À ouvrir (date passée, non encore ouvertes) ── -->
+    <?php if (!empty($capsules_ready)): ?>
+        <p class="capsule-section-title">🔓 Prêtes à ouvrir</p>
+        <?php foreach ($capsules_ready as $c): ?>
+            <div class="capsule-card capsule-ready">
+                <div class="capsule-icon">
+                    <ion-icon name="gift-outline"></ion-icon>
+                </div>
+                <div class="capsule-info">
+                    <h3 class="capsule-title"><?= htmlspecialchars($c['title'] ?? 'Sans titre') ?></h3>
+                    <p class="capsule-date">Disponible depuis le <?= date('d/m/Y', strtotime($c['unlock_at'])) ?></p>
+                    <a href="?open=<?= $c['capsule_id'] ?>" class="capsule-open-btn">
+                        <ion-icon name="lock-open-outline"></ion-icon> Ouvrir maintenant
+                    </a>
+                </div>
+                <div class="capsule-badge capsule-badge-ready">À ouvrir</div>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
+
+    <!-- ── Bientôt ── -->
+    <?php if (!empty($capsules_soon)): ?>
+        <p class="capsule-section-title">⏳ Bientôt disponibles</p>
+        <?php foreach ($capsules_soon as $c): ?>
+            <div class="capsule-card capsule-soon">
+                <div class="capsule-icon">
+                    <ion-icon name="time-outline"></ion-icon>
+                </div>
+                <div class="capsule-info">
+                    <h3 class="capsule-title"><?= htmlspecialchars($c['title'] ?? 'Sans titre') ?></h3>
+                    <p class="capsule-date"><?= formatCountdown((int) $c['seconds_left']) ?></p>
+                </div>
+                <div class="capsule-badge capsule-badge-soon">Bientôt</div>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
+
+    <!-- ── Verrouillées ── -->
+    <?php if (!empty($capsules_locked)): ?>
+        <p class="capsule-section-title">🔒 Verrouillées</p>
+        <?php foreach ($capsules_locked as $c): ?>
+            <div class="capsule-card capsule-locked">
+                <div class="capsule-icon">
+                    <ion-icon name="lock-closed-outline"></ion-icon>
+                </div>
+                <div class="capsule-info">
+                    <h3 class="capsule-title"><?= htmlspecialchars($c['title'] ?? 'Sans titre') ?></h3>
+                    <p class="capsule-date">S'ouvre le <?= date('d/m/Y', strtotime($c['unlock_at'])) ?></p>
+                </div>
+                <div class="capsule-badge capsule-badge-locked">Verrouillée</div>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
+
+    <!-- ── Ouvertes ── -->
+    <?php if (!empty($capsules_open)): ?>
+        <p class="capsule-section-title">✨ Déjà ouvertes</p>
+        <?php foreach ($capsules_open as $c): ?>
+            <div class="capsule-card capsule-open">
+                <div class="capsule-icon">
+                    <ion-icon name="star-outline"></ion-icon>
+                </div>
+                <div class="capsule-info">
+                    <h3 class="capsule-title"><?= htmlspecialchars($c['title'] ?? 'Sans titre') ?></h3>
+                    <p class="capsule-date">Ouverte depuis le <?= date('d/m/Y', strtotime($c['unlock_at'])) ?></p>
+                </div>
+                <div class="capsule-badge capsule-badge-open">Ouverte</div>
+            </div>
+
+            <!-- Contenu selon le type -->
+            <?php if ($c['type'] === 'photo' && $c['file_path']): ?>
+                <div class="capsule-photos">
+                    <img src="<?= BASE_URL ?>/<?= htmlspecialchars($c['file_path']) ?>" alt="<?= htmlspecialchars($c['title']) ?>">
+                </div>
+
+            <?php elseif ($c['type'] === 'note' && $c['content']): ?>
+                <div class="capsule-note-content">
+                    <?= nl2br(htmlspecialchars($c['content'])) ?>
+                </div>
+
+            <?php elseif ($c['type'] === 'video' && $c['file_path']): ?>
+                <div class="capsule-media">
+                    <video controls>
+                        <source src="<?= BASE_URL ?>/<?= htmlspecialchars($c['file_path']) ?>">
+                    </video>
+                </div>
+
+            <?php elseif ($c['type'] === 'audio' && $c['file_path']): ?>
+                <div class="capsule-media">
+                    <audio controls>
+                        <source src="<?= BASE_URL ?>/<?= htmlspecialchars($c['file_path']) ?>">
+                    </audio>
+                </div>
+            <?php endif; ?>
+
+        <?php endforeach; ?>
+    <?php endif; ?>
 
 </div>
 
