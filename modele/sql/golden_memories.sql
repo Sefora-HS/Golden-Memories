@@ -213,3 +213,16 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+CREATE TABLE IF NOT EXISTS notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,          -- Celui qui reçoit la notif
+    from_user_id INT DEFAULT NULL, -- Celui qui a fait l'action
+    type VARCHAR(50) NOT NULL,     -- 'new_memory', 'capsule', 'friend_request'
+    content TEXT NOT NULL,         -- Le message à afficher
+    reference_id INT DEFAULT NULL, -- L'ID du souvenir ou de l'album concerné
+    is_read TINYINT(1) DEFAULT 0,  -- 0 = non lu, 1 = lu
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

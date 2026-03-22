@@ -55,7 +55,11 @@ foreach ($notifications as $notif) {
 
         <?php else: ?>
             <?php foreach ($notifications as $notif): ?>
-                <div class="notif-item <?= $notif['is_read'] ? '' : 'notif-unread' ?>">
+                <div class="notif-item <?= $notif['is_read'] ? '' : 'notif-unread' ?>" data-id="<?= $notif['id'] ?>">
+
+                    <button class="notif-delete-btn" onclick="updateNotif(<?= $notif['id'] ?>, 'delete')">
+                        <ion-icon name="close-outline"></ion-icon>
+                    </button>
 
                     <div class="notif-icon">
                         <?php if (!empty($notif['picture'])): ?>
@@ -67,7 +71,9 @@ foreach ($notifications as $notif) {
 
                     <div class="notif-content">
                         <?php if ($notif['type'] === 'new_memory' && $notif['reference_id']): ?>
-                            <a href="<?= BASE_URL ?>/vue/pages/post.php?id=<?= $notif['reference_id'] ?>" class="notif-link">
+                            <a href="<?= BASE_URL ?>/vue/pages/post.php?id=<?= $notif['reference_id'] ?>" 
+                               class="notif-link" 
+                               onclick="updateNotif(<?= $notif['id'] ?>, 'mark_as_read')">
                                 <p class="notif-text"><?= htmlspecialchars($notif['content']) ?></p>
                                 <?php if (isset($apercus[$notif['reference_id']])): ?>
                                     <?php $apercu = $apercus[$notif['reference_id']]; ?>
@@ -116,5 +122,27 @@ foreach ($notifications as $notif) {
 
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+<script>
+async function updateNotif(id, action) {
+    // Si c'est un lien (mark_as_read), on n'empêche pas la navigation, on lance juste l'appel
+    const response = await fetch('../../controler/notif_actions.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id, action: action })
+    });
+    
+    if (response.ok && action === 'delete') {
+        const item = document.querySelector(`.notif-item[data-id="${id}"]`);
+        if (item) {
+            item.style.transition = '0.3s';
+            item.style.opacity = '0';
+            item.style.transform = 'translateX(20px)';
+            setTimeout(() => item.remove(), 300);
+        }
+    }
+}
+</script>
+
 </body>
 </html>
