@@ -21,14 +21,16 @@ $albums = $stmtAlbums->fetchAll(PDO::FETCH_ASSOC);
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_album_title'])) {
     //récupération du titre entré par l'utilisateur
     $newAlbumTitle = trim($_POST['new_album_title']);
-    if (!empty($newAlbumTitle)) { 
+    // récupération du statut de partage (0 par défaut si non fourni)
+    $isShared = isset($_POST['is_shared']) ? (int)$_POST['is_shared'] : 0;
+    if (!empty($newAlbumTitle)) {
         $stmtAlbum = $bdd->prepare("
-            INSERT INTO albums (user_id, title, nbr_memories)
-            VALUES (:uid, :title, 0)
+            INSERT INTO albums (user_id, title, nbr_memories, is_shared)
+            VALUES (:uid, :title, 0, :is_shared)
         ");
-        $stmtAlbum->execute([':uid' => $userId, ':title' => $newAlbumTitle]);
+        $stmtAlbum->execute([':uid' => $userId, ':title' => $newAlbumTitle, ':is_shared' => $isShared]);
         $newId = $bdd->lastInsertId();
-        echo json_encode(['success' => true, 'id' => $newId, 'title' => $newAlbumTitle]);
+        echo json_encode(['success' => true, 'id' => $newId, 'title' => $newAlbumTitle, 'is_shared' => $isShared]);
     } else {
         //si aucun titre, empêche la création de l'album
         echo json_encode(['success' => false]);
@@ -66,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $filePath = null;
 
-        // extensions autorisés à être importé en dehors des notes 
+        // extensions autorisés à être importé en dehors des notes
         if ($type !== 'note') {
             $file     = $_FILES['file'];
             $ext      = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
@@ -111,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':content'   => $content ?: null,
             ]);
 
-            //on récupère l'id du souvenir que l'on vient de créer 
+            //on récupère l'id du souvenir que l'on vient de créer
             $memoryId = $bdd->lastInsertId();
 
             // Mise à jour du compteur album, si le souvenir appartient à un album
@@ -120,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ->execute([':id' => $albumId]);
             }
 
-            // Création de la capsule temporelle si l'utilisateur a selectionné l'option 
+            // Création de la capsule temporelle si l'utilisateur a selectionné l'option
             if ($isCapsule) {
                 $stmtCap = $bdd->prepare("
                     INSERT INTO time_capsules (memory_id, capsule_title, unlock_at, is_open)
@@ -133,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             }
 
-            //redirection vers la page d'accueil une fois le souvenir crée 
+            //redirection vers la page d'accueil une fois le souvenir crée
             header('Location: ' . BASE_URL . '/index.php?added=1');
             exit;
         }
@@ -211,16 +213,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="file" name="file" id="file-input" class="hidden" onchange="previewFile(this)">
         </div>
 
-       <!-- zone pour inscrire une note caché par default -->
+        <!-- zone pour inscrire une note caché par default -->
         <div id="note-zone" class="form-group hidden">
             <label>Votre note</label>
             <textarea name="content" id="note-content" class="note-textarea" placeholder="Écrivez votre souvenir ici…" rows="6"><?= htmlspecialchars($_POST['content'] ?? '') ?></textarea>
         </div>
 
-       <!-- zone de prévisualisation caché par default, disponible une fois le souvenir importé -->
+        <!-- zone de prévisualisation caché par default, disponible une fois le souvenir importé -->
         <div id="preview-zone" class="preview-zone hidden"></div>
 
-       <!-- affichage et création des albums pour attribuer ou non un souvenir à un album -->
+        <!-- affichage et création des albums pour attribuer ou non un souvenir à un album -->
         <?php if (!empty($albums)): ?>
         <div class="extra-section">
             <!-- bouton qui permet d'ouvrir la div album-block -->
@@ -260,6 +262,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="new-album-wrap">
                     <!-- nom -->
                     <input type="text" id="new-album-input" placeholder="Nom du nouvel album…" class="new-album-input">
+                    <!-- toggle pour définir si l'album est partagé ou non, privé par défaut -->
+                    <label class="new-album-share-toggle" id="share-toggle-label" title="Partager l'album">
+                        <input type="checkbox" id="new-album-shared" style="display:none;">
+                        <ion-icon name="people-outline" id="share-icon"></ion-icon>
+                    </label>
                     <!-- bouton de création -->
                     <button type="button" onclick="createAlbum()" class="new-album-btn">
                         <ion-icon name="add-outline"></ion-icon>

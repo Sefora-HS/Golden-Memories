@@ -124,3 +124,16 @@ function createAlbum() {
             input.value = '';
         });
 }
+
+// mise à jour de l'icône selon l'état du toggle de partage
+    document.getElementById('new-album-shared')?.addEventListener('change', function () {
+        const label = document.getElementById('share-toggle-label');
+        const icon  = document.getElementById('share-icon');
+        if (this.checked) {
+            label.classList.add('active');
+            icon.setAttribute('name', 'people');        
+        } else {
+            label.classList.remove('active');
+            icon.setAttribute('name', 'people-outline');
+        }
+    });
