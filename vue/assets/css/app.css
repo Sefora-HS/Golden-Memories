@@ -2808,3 +2808,33 @@ a.profil-stat {
 .new-album-share-toggle.active {
     color: #F6E7B4;
 }
+
+/* Couleurs par défaut (Mode Clair) */
+:root {
+    --bg-color: #f1f1ed;
+    --text-color: #323231;
+    --card-bg: #ffffff;
+}
+
+/* Couleurs quand le mode sombre est activé */
+[data-theme="dark"] {
+    --bg-color: #121212;
+    --text-color: #ffffff;
+    --card-bg: #1e1e1e;
+}
+
+/* Appliquer les variables aux éléments */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease; /* Pour que ce soit fluide */
+}
+
+.form-page {
+    background-color: var(--bg-color);
+}
+
+.setting-item {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
