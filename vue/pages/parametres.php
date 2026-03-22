@@ -68,10 +68,12 @@
                 <span>Infos</span>
             </div>
 
-            <div class="setting-item">
+            <div class="setting-item" id="theme-toggle" onclick="toggleTheme()">
                 <ion-icon name="color-palette-outline"></ion-icon>
                 <span>Thème</span>
+                <small id="theme-status" style="margin-left: auto; opacity: 0.6;">Clair</small>
             </div>
+            
         </div>
 
         <div class="meta-section">
