@@ -10,10 +10,16 @@ $userId = $_SESSION['user']['id'];
 $memoryId = $_GET['id'] ?? null;
 
 // Récupère la page d'origine pour le bouton retour
-$from = $_GET['from'] ?? 'index';
-$urlRetour = ($from === 'profil')
-    ? 'http://localhost/golden-memories/vue/pages/profil.php'
-    : 'http://localhost/golden-memories/index.php';
+$from    = $_GET['from'] ?? 'index';
+$albumIdFrom = isset($_GET['album_id']) && is_numeric($_GET['album_id']) ? (int)$_GET['album_id'] : null;
+
+if ($from === 'profil') {
+    $urlRetour = BASE_URL . '/vue/pages/profil.php';
+} elseif ($from === 'share-album' && $albumIdFrom) {
+    $urlRetour = BASE_URL . '/vue/pages/share-album.php?id=' . $albumIdFrom;
+} else {
+    $urlRetour = BASE_URL . '/index.php';
+}
 
 if (!$memoryId) {
     header('Location: ' . BASE_URL . '/index.php');
@@ -36,8 +42,30 @@ $stmtCreateur->execute([':id' => $souvenir['user_id']]);
 $createur = $stmtCreateur->fetch(PDO::FETCH_ASSOC);
 
 // Vérifie si l'utilisateur est le créateur du post
-$estCreateur = ($souvenir['user_id'] === $userId);
+$estCreateur = ($souvenir['user_id'] == $userId);
 
+$estMembre = $estCreateur;
+$checkAlbumId = $souvenir['album_id'] ?? $albumIdFrom;
+ 
+if ($checkAlbumId) {
+    // Propriétaire de l'album
+    $stmtAlbumOwner = $bdd->prepare("SELECT user_id FROM albums WHERE id = :id");
+    $stmtAlbumOwner->execute([':id' => $checkAlbumId]);
+    $albumOwnerId = $stmtAlbumOwner->fetchColumn();
+    if ($albumOwnerId == $userId) {
+        $estMembre = true;
+    } else {
+        // Vérifie si l'utilisateur est membre de l'album dans album_members
+        $stmtMembership = $bdd->prepare("
+            SELECT COUNT(*) FROM album_members
+            WHERE album_id = :album_id AND user_id = :user_id
+        ");
+        $stmtMembership->execute([':album_id' => $checkAlbumId, ':user_id' => $userId]);
+        if ($stmtMembership->fetchColumn() > 0) {
+            $estMembre = true;
+        }
+    }
+}
 // Compte les likes
 $stmtLikes = $bdd->prepare("SELECT COUNT(*) FROM likes WHERE memory_id = :id");
 $stmtLikes->execute([':id' => $memoryId]);
@@ -128,15 +156,25 @@ $comments = $stmtComments->fetchAll(PDO::FETCH_ASSOC);
     <!-- Actions -->
     <div class="post-actions">
 
+         <?php if ($estMembre): ?>
         <button class="post-action-btn like-btn <?= $jaLike ? 'liked' : '' ?>">
             <ion-icon name="<?= $jaLike ? 'heart' : 'heart-outline' ?>"></ion-icon>
             <span class="like-count"><?= $nbLikes ?></span>
         </button>
-
         <button class="post-action-btn" onclick="scrollToComments()">
             <ion-icon name="chatbubble-outline"></ion-icon>
             <span><?= $nbComments ?></span>
         </button>
+        <?php else: ?>
+        <span class="post-action-btn post-action-readonly">
+            <ion-icon name="heart-outline"></ion-icon>
+            <span><?= $nbLikes ?></span>
+        </span>
+        <span class="post-action-btn post-action-readonly">
+            <ion-icon name="chatbubble-outline"></ion-icon>
+            <span><?= $nbComments ?></span>
+        </span>
+        <?php endif; ?>
 
        <!-- Partager — uniquement pour le créateur -->
         <?php if ($estCreateur): ?>
@@ -172,11 +210,18 @@ $comments = $stmtComments->fetchAll(PDO::FETCH_ASSOC);
         <?php endif; ?>
     </div>
 
-    <!-- Input commentaire -->
+    <!-- Input commentaire — membres de l'album uniquement -->
+    <?php if ($estMembre): ?>
     <div class="post-comment-input">
         <input type="text" id="comment-input" placeholder="Ajouter un commentaire...">
         <button onclick="sendComment()"><ion-icon name="send-outline"></ion-icon></button>
     </div>
+    <?php else: ?>
+    <div class="post-comment-locked">
+        <ion-icon name="lock-closed-outline"></ion-icon>
+        <span>Seuls les membres de l'album peuvent commenter</span>
+    </div>
+    <?php endif; ?>
 
 </div>
 

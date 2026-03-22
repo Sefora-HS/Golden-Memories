@@ -27,7 +27,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 </li>
 
 <li class="list <?= ($current_page == 'partages.php') ? 'active' : '' ?>">
-    <a href="<?= ($current_page == 'partages.php') ? '#' : BASE_URL . '/vue/pages/partages.php' ?>">
+    <a href="<?= ($current_page == 'partages.php') ? '#' : BASE_URL . '/vue/pages/partage.php' ?>">
         <span class="icon"><ion-icon name="people-outline"></ion-icon></span>
         <p>Partages</p>
     </a>
