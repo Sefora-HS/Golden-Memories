@@ -138,27 +138,6 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
-}
-
-.notif-badge {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    background: #e74c3c;
-    color: #fff;
-    font-size: 0.6rem;
-    font-weight: 600;
-    min-width: 16px;
-    height: 16px;
-    border-radius: 8px;
-    padding: 0 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    border: 1.5px solid #fff;
-    pointer-events: none;
 }
 
 .pp {
@@ -1161,30 +1140,6 @@ a {
     padding: 1rem;
     border-radius: 16px;
     box-shadow: 0 0 10px rgba(255, 221, 87, 0.2);
-    position: relative;
-}
-
-.notif-delete-btn {
-    flex-shrink: 0;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: #ccc;
-    font-size: 1.1rem;
-    padding: 4px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    transition: background 0.2s, color 0.2s;
-    margin-top: 2px;
-}
-
-.notif-delete-btn:hover {
-    background: #fde8e8;
-    color: #e05555;
 }
 
 .notif-unread {
@@ -1354,23 +1309,19 @@ a {
 }
 
 .capsule-photos {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
     border-radius: 0 0 16px 16px;
     overflow: hidden;
     border: 1px solid #e0e0e0;
     border-top: none;
-    padding: 4px;
     background: #fff;
     margin-top: -0.8rem;
 }
 
 .capsule-photos img {
     width: 100%;
-    aspect-ratio: 1;
+    display: block;
     object-fit: cover;
-    border-radius: 8px;
+    max-height: 220px;
 }
 .capsule-hero {
     background: #2C2C2C;
@@ -2840,103 +2791,123 @@ a.profil-stat {
     background: rgba(255,255,255,0.92);
     color: #555;
 }
-/* ── Bouton suppression album (hero) ── */
-.hero-owner-actions {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-}
 
-/* bouton poubelle dans le hero */
-.hero-btn-delete {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
-    border: none;
-    background: rgba(220, 50, 50, 0.75);
-    color: #fff;
-    font-size: 1rem;
+/* toggle de partage dans la création d'album */
+.new-album-share-toggle {
     cursor: pointer;
-    backdrop-filter: blur(4px);
-    transition: background .2s, transform .15s;
-}
-.hero-btn-delete:hover { background: rgba(200, 30, 30, 0.95); transform: scale(1.1); }
-
-/* ── Modale de confirmation suppression ── */
-.delete-modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.55);
-    z-index: 999;
+    display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 1.5rem;
+    padding: 0 0.5rem;
+    color: var(--text-muted);
+    transition: color 0.2s;
 }
-.delete-modal-overlay.visible { display: flex; }
-
-.delete-modal {
-    background: var(--card-bg, #1e1e1e);
-    border-radius: 1.25rem;
-    padding: 2rem 1.5rem 1.5rem;
-    width: 100%;
-    max-width: 340px;
-    text-align: center;
-    box-shadow: 0 8px 32px rgba(0,0,0,.4);
+.new-album-share-toggle.active {
+    color: #F6E7B4;
 }
 
-/* icône poubelle dans la modale */
-.delete-modal-icon {
-    font-size: 2.5rem;
-    color: #e05555;
-    margin-bottom: .75rem;
+/* Couleurs par défaut (Mode Clair) */
+:root {
+    --bg-color: #f1f1ed;
+    --text-color: #323231;
+    --card-bg: #ffffff;
 }
-.delete-modal-title {
-    font-size: 1.15rem;
+
+/* Couleurs quand le mode sombre est activé */
+[data-theme="dark"] {
+    --bg-color: #121212;
+    --text-color: #ffffff;
+    --card-bg: #1e1e1e;
+}
+
+/* Appliquer les variables aux éléments */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease; /* Pour que ce soit fluide */
+}
+
+.form-page {
+    background-color: var(--bg-color);
+}
+
+.setting-item {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+
+/* ── Capsules — classes dynamiques à ajouter ── */
+
+.capsule-badge-ready {
+    background: #fde8e8;
+    color: #e84040;
+}
+
+.capsule-card.capsule-ready {
+    border: 1px solid rgba(232, 64, 64, 0.2);
+}
+
+.capsule-section-title {
+    font-size: 0.75rem;
     font-weight: 700;
-    margin-bottom: .5rem;
-    color: var(--text, #fff);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin: 0.5rem 0.2rem 0.3rem;
 }
-.delete-modal-desc {
-    font-size: .85rem;
-    color: var(--text-muted, #aaa);
-    margin-bottom: 1.5rem;
-    line-height: 1.5;
-}
-.delete-modal-actions {
-    display: flex;
-    gap: .75rem;
-}
-/* bouton annuler */
-.delete-modal-cancel {
-    flex: 1;
-    padding: .7rem;
-    border-radius: .75rem;
-    border: 1.5px solid var(--border, #333);
-    background: transparent;
-    color: var(--text, #fff);
-    font-size: .9rem;
-    cursor: pointer;
-    transition: background .2s;
-}
-.delete-modal-cancel:hover { background: rgba(255,255,255,.07); }
 
-/* bouton confirmer suppression */
-.delete-modal-confirm {
-    flex: 1;
-    padding: .7rem;
-    border-radius: .75rem;
-    background: #e05555;
-    color: #fff;
-    font-size: .9rem;
-    font-weight: 600;
-    text-decoration: none;
-    display: flex;
+.capsule-open-btn {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    transition: background .2s;
+    gap: 6px;
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: #e84040;
+    color: #fff;
+    text-decoration: none;
+    transition: background 0.2s;
 }
-.delete-modal-confirm:hover { background: #c03333; }
+.capsule-open-btn:hover { background: #c0392b; }
+
+.capsule-note-content {
+    background: #f6e7b4;
+    border-radius: 0 0 16px 16px;
+    padding: 12px 16px;
+    font-family: 'Caveat', cursive;
+    font-size: 1.1rem;
+    color: #2c2c2c;
+    line-height: 1.6;
+    margin-top: -0.8rem;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+}
+
+.capsule-media {
+    margin-top: -0.8rem;
+    margin-bottom: 0.8rem;
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+}
+.capsule-media video,
+.capsule-media audio {
+    width: 100%;
+    display: block;
+}
+
+.capsule-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #aaa;
+    font-size: 0.9rem;
+}
+.capsule-empty ion-icon {
+    font-size: 2.5rem;
+    opacity: 0.3;
+    display: block;
+    margin: 0 auto 0.8rem;
+}

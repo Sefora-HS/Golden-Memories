@@ -25,13 +25,5 @@ if ($notifId) {
         ->execute([':id' => $notifId]);
 }
 
-// Rafraîchit la session avec les données à jour (Bug 6)
-$stmtSession = $bdd->prepare("SELECT id, username, picture FROM users WHERE id = :id");
-$stmtSession->execute([':id' => $userId]);
-$freshUser = $stmtSession->fetch(PDO::FETCH_ASSOC);
-if ($freshUser) {
-    $_SESSION['user'] = array_merge($_SESSION['user'], $freshUser);
-}
-
 header('Location: ' . BASE_URL . '/vue/pages/notifications.php');
 exit;

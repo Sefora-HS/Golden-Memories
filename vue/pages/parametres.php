@@ -76,7 +76,7 @@
                 <small id="theme-status" style="margin-left: auto; opacity: 0.6;">Clair</small>
             </div>
 
-            <a href="<?= BASE_URL ?>/controler/logout.php" class="setting-item settings-danger">
+            <a href="<?= BASE_URL ?>/controleur/logout.php" class="setting-item settings-danger">
                 <ion-icon name="log-out-outline"></ion-icon>
                 <span>Déconnexion</span>
             </a>
