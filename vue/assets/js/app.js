@@ -65,9 +65,14 @@ function previewFile(input) {
     }
 }
 
-document.getElementById('file-label').addEventListener('click', () => {
-    document.getElementById('file-input').click();
-});
+const fileLabel = document.getElementById('file-label');
+const fileInput = document.getElementById('file-input');
+
+if (fileLabel && fileInput) {
+    fileLabel.addEventListener('click', () => {
+        fileInput.click();
+    });
+}
 
 function toggleExtra(blockId) {
     const block   = document.getElementById(blockId);
