@@ -1309,23 +1309,19 @@ a {
 }
 
 .capsule-photos {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
     border-radius: 0 0 16px 16px;
     overflow: hidden;
     border: 1px solid #e0e0e0;
     border-top: none;
-    padding: 4px;
     background: #fff;
     margin-top: -0.8rem;
 }
 
 .capsule-photos img {
     width: 100%;
-    aspect-ratio: 1;
+    display: block;
     object-fit: cover;
-    border-radius: 8px;
+    max-height: 220px;
 }
 .capsule-hero {
     background: #2C2C2C;

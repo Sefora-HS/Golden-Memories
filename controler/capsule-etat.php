@@ -1,20 +1,20 @@
 <?php
 include_once '../../modele/config.php';
-session_start();
 
-// Vérification session
-if (!isset($_SESSION['user_id'])) {
+// Vérification session — utilise $_SESSION['user'] comme partout ailleurs
+if (!isset($_SESSION['user'])) {
     header('Location: ' . BASE_URL . '/vue/pages/login.php');
     exit;
 }
 
-$user_id = $_SESSION['user_id'];
+// Récupère l'id depuis la bonne variable de session
+$user_id = $_SESSION['user']['id'];
 
 // ── Action : ouvrir une capsule ──
 if (isset($_GET['open']) && is_numeric($_GET['open'])) {
     $capsule_id = (int) $_GET['open'];
 
-    $stmt = $pdo->prepare("
+    $stmt = $bdd->prepare("
         UPDATE time_capsules tc
         JOIN memories m ON m.id = tc.memory_id
         SET tc.is_open = 1
@@ -28,15 +28,16 @@ if (isset($_GET['open']) && is_numeric($_GET['open'])) {
     exit;
 }
 
-// ── Récupérer toutes les capsules de l'utilisateur ──
-$stmt = $pdo->prepare("
+// ── Récupérer toutes les capsules ──
+$stmt = $bdd->prepare("
     SELECT 
         tc.id        AS capsule_id,
+        tc.capsule_title,
         tc.unlock_at,
         tc.is_open,
         tc.created_at AS capsule_created,
         m.id         AS memory_id,
-        m.title,
+        m.title      AS memory_title,
         m.type,
         m.file_path,
         m.content,
@@ -50,12 +51,12 @@ $stmt->execute([':user_id' => $user_id]);
 $capsules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // ── Séparer en 4 groupes ──
-$capsules_ready  = []; // date passée, pas encore ouverte
-$capsules_soon   = []; // moins de 7 jours
-$capsules_locked = []; // date future lointaine
-$capsules_open   = []; // déjà ouvertes
+$capsules_ready  = [];
+$capsules_soon   = [];
+$capsules_locked = [];
+$capsules_open   = [];
 
-$seuil_bientot = 7 * 24 * 3600; // 7 jours en secondes
+$seuil_bientot = 7 * 24 * 3600;
 
 foreach ($capsules as $c) {
     if ($c['is_open']) {
@@ -69,7 +70,6 @@ foreach ($capsules as $c) {
     }
 }
 
-// ── Fonctions utilitaires ──
 function formatCountdown(int $seconds): string {
     if ($seconds <= 0) return 'Maintenant';
     $days    = floor($seconds / 86400);

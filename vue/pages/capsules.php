@@ -1,4 +1,9 @@
-<?php include_once '../../controler/capsules.php'; ?>
+<?php
+// Récupère les infos de l'utilisateur connecté depuis la db
+include_once '../../modele/config.php';
+include_once '../../modele/User.php';
+include_once '../../controler/capsule-etat.php';
+?>
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -39,19 +44,16 @@
     <?php if (!empty($capsules_ready)): ?>
         <p class="capsule-section-title">🔓 Prêtes à ouvrir</p>
         <?php foreach ($capsules_ready as $c): ?>
-            <div class="capsule-card capsule-ready">
+            <a href="<?= BASE_URL ?>/vue/pages/capsule-interior.php?id=<?= $c['capsule_id'] ?>" class="capsule-card capsule-ready" style="text-decoration:none;color:inherit;display:flex;">
                 <div class="capsule-icon">
                     <ion-icon name="gift-outline"></ion-icon>
                 </div>
                 <div class="capsule-info">
-                    <h3 class="capsule-title"><?= htmlspecialchars($c['title'] ?? 'Sans titre') ?></h3>
+                    <h3 class="capsule-title"><?= htmlspecialchars($c['capsule_title'] ?? 'Sans titre') ?></h3>
                     <p class="capsule-date">Disponible depuis le <?= date('d/m/Y', strtotime($c['unlock_at'])) ?></p>
-                    <a href="?open=<?= $c['capsule_id'] ?>" class="capsule-open-btn">
-                        <ion-icon name="lock-open-outline"></ion-icon> Ouvrir maintenant
-                    </a>
                 </div>
                 <div class="capsule-badge capsule-badge-ready">À ouvrir</div>
-            </div>
+            </a>
         <?php endforeach; ?>
     <?php endif; ?>
 
@@ -65,7 +67,7 @@
                     <ion-icon name="time-outline"></ion-icon>
                 </div>
                 <div class="capsule-info">
-                    <h3 class="capsule-title"><?= htmlspecialchars($c['title'] ?? 'Sans titre') ?></h3>
+                    <h3 class="capsule-title"><?= htmlspecialchars($c['capsule_title'] ?? 'Sans titre') ?></h3>
                     <p class="capsule-date"><?= formatCountdown((int) $c['seconds_left']) ?></p>
                 </div>
                 <div class="capsule-badge capsule-badge-soon">Bientôt</div>
@@ -83,7 +85,7 @@
                     <ion-icon name="lock-closed-outline"></ion-icon>
                 </div>
                 <div class="capsule-info">
-                    <h3 class="capsule-title"><?= htmlspecialchars($c['title'] ?? 'Sans titre') ?></h3>
+                    <h3 class="capsule-title"><?= htmlspecialchars($c['capsule_title'] ?? 'Sans titre') ?></h3>
                     <p class="capsule-date">S'ouvre le <?= date('d/m/Y', strtotime($c['unlock_at'])) ?></p>
                 </div>
                 <div class="capsule-badge capsule-badge-locked">Verrouillée</div>
@@ -96,21 +98,21 @@
     <?php if (!empty($capsules_open)): ?>
         <p class="capsule-section-title">✨ Déjà ouvertes</p>
         <?php foreach ($capsules_open as $c): ?>
-            <div class="capsule-card capsule-open">
+            <a href="<?= BASE_URL ?>/vue/pages/capsule-interior.php?id=<?= $c['capsule_id'] ?>" class="capsule-card capsule-open" style="text-decoration:none;color:inherit;display:flex;">
                 <div class="capsule-icon">
                     <ion-icon name="star-outline"></ion-icon>
                 </div>
                 <div class="capsule-info">
-                    <h3 class="capsule-title"><?= htmlspecialchars($c['title'] ?? 'Sans titre') ?></h3>
+                    <h3 class="capsule-title"><?= htmlspecialchars($c['capsule_title'] ?? 'Sans titre') ?></h3>
                     <p class="capsule-date">Ouverte depuis le <?= date('d/m/Y', strtotime($c['unlock_at'])) ?></p>
                 </div>
                 <div class="capsule-badge capsule-badge-open">Ouverte</div>
-            </div>
+            </a>
 
             <!-- Contenu selon le type -->
             <?php if ($c['type'] === 'photo' && $c['file_path']): ?>
                 <div class="capsule-photos">
-                    <img src="<?= BASE_URL ?>/<?= htmlspecialchars($c['file_path']) ?>" alt="<?= htmlspecialchars($c['title']) ?>">
+                    <img src="<?= BASE_URL ?>/<?= htmlspecialchars($c['file_path'] ?? '') ?>" alt="<?= htmlspecialchars($c['title'] ?? '') ?>">
                 </div>
 
             <?php elseif ($c['type'] === 'note' && $c['content']): ?>
@@ -121,14 +123,14 @@
             <?php elseif ($c['type'] === 'video' && $c['file_path']): ?>
                 <div class="capsule-media">
                     <video controls>
-                        <source src="<?= BASE_URL ?>/<?= htmlspecialchars($c['file_path']) ?>">
+                        <source src="<?= BASE_URL ?>/<?= htmlspecialchars($c['file_path'] ?? '') ?>">
                     </video>
                 </div>
 
             <?php elseif ($c['type'] === 'audio' && $c['file_path']): ?>
                 <div class="capsule-media">
                     <audio controls>
-                        <source src="<?= BASE_URL ?>/<?= htmlspecialchars($c['file_path']) ?>">
+                        <source src="<?= BASE_URL ?>/<?= htmlspecialchars($c['file_path'] ?? '') ?>">
                     </audio>
                 </div>
             <?php endif; ?>

@@ -124,7 +124,7 @@ $typeIcons = [
                          alt="<?= htmlspecialchars($capsule['memory_title'] ?? '') ?>">
                     <!-- titre du souvenir -->
                     <p class="ci-polaroid-caption">
-                        <?= htmlspecialchars($capsule['capsule_title'] ?? $capsule['memory_title'] ?? 'Sans titre') ?>
+                        <?= htmlspecialchars($capsule['memory_title'] ?: $capsule['capsule_title'] ?: 'Sans titre') ?>
                     </p>
                 </div>
             </div>
@@ -137,8 +137,8 @@ $typeIcons = [
                 <div class="ci-polaroid-video">
                     <video src="<?= BASE_URL ?>/<?= htmlspecialchars($capsule['file_path']) ?>"
                            controls></video>
-                    <p class="ci-polaroid-caption" style="font-family:'Caveat',cursive;text-align:center;padding-top:8px;color:#555;">
-                        <?= htmlspecialchars($capsule['memory_title'] ?? '') ?>
+                    <p class="ci-polaroid-caption">
+                        <?= htmlspecialchars($capsule['memory_title'] ?: $capsule['capsule_title'] ?: 'Sans titre') ?>
                     </p>
                 </div>
             </div>
