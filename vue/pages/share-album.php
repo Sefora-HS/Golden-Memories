@@ -108,7 +108,6 @@ $inviteSuccess = isset($_GET['invited']) ? 1 : 0;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="<?= BASE_URL ?>/vue/assets/css/app.css?v=<?= time() ?>">
-    <link rel="icon" type="image/png" sizes="60x60" href="<?= BASE_URL ?>/vue/assets/images/favicon.png">
     <title><?= htmlspecialchars($album['title']) ?> — Golden Memories</title>
 </head>
 <body>
