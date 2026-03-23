@@ -5,7 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/vue/assets/css/app.css?v=<?= time() ?>">   
+    <link rel="stylesheet" href="<?= BASE_URL ?>/vue/assets/css/app.css?v=<?= time() ?>">  
+     <link rel="icon" type="image/png" sizes="60x60" href="<?= BASE_URL ?>/vue/assets/images/favicon.png">
     <title>Golden Memories — Confidentialité</title>
 </head>
 <body>
@@ -17,6 +18,7 @@
     <div id="main-settings-view">
         <div class="form-top">
             <a href="<?= BASE_URL ?>/vue/pages/profil.php?v=<?= time() ?>" class="form-back">
+
                 <ion-icon name="arrow-back-outline"></ion-icon>
             </a>
             <h2 class="form-title">Paramètres</h2>
