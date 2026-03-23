@@ -8,6 +8,10 @@ if (!isset($_SESSION['user'])) {
 
 $userId = $_SESSION['user']['id'];
 
+// Marque toutes les notifs comme lues dès l'ouverture (sauf les demandes d'ami en attente)
+$bdd->prepare("UPDATE notifications SET is_read = 1 WHERE user_id = :uid AND is_read = 0 AND type != 'friend_request'")
+    ->execute([':uid' => $userId]);
+
 // Récupère toutes les notifications de l'utilisateur connecté
 $stmt = $bdd->prepare("
     SELECT n.*, u.username, u.picture 
@@ -57,10 +61,6 @@ foreach ($notifications as $notif) {
             <?php foreach ($notifications as $notif): ?>
                 <div class="notif-item <?= $notif['is_read'] ? '' : 'notif-unread' ?>" data-id="<?= $notif['id'] ?>">
 
-                    <button class="notif-delete-btn" onclick="updateNotif(<?= $notif['id'] ?>, 'delete')">
-                        <ion-icon name="close-outline"></ion-icon>
-                    </button>
-
                     <div class="notif-icon">
                         <?php if (!empty($notif['picture'])): ?>
                             <img src="<?= BASE_URL ?>/vue/assets/images/<?= htmlspecialchars($notif['picture']) ?>" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
@@ -71,9 +71,7 @@ foreach ($notifications as $notif) {
 
                     <div class="notif-content">
                         <?php if ($notif['type'] === 'new_memory' && $notif['reference_id']): ?>
-                            <a href="<?= BASE_URL ?>/vue/pages/post.php?id=<?= $notif['reference_id'] ?>" 
-                               class="notif-link" 
-                               onclick="updateNotif(<?= $notif['id'] ?>, 'mark_as_read')">
+                            <a href="<?= BASE_URL ?>/vue/pages/post.php?id=<?= $notif['reference_id'] ?>" class="notif-link">
                                 <p class="notif-text"><?= htmlspecialchars($notif['content']) ?></p>
                                 <?php if (isset($apercus[$notif['reference_id']])): ?>
                                     <?php $apercu = $apercus[$notif['reference_id']]; ?>
@@ -112,6 +110,10 @@ foreach ($notifications as $notif) {
                         <div class="notif-dot"></div>
                     <?php endif; ?>
 
+                    <button class="notif-delete-btn" onclick="supprimerNotif(<?= $notif['id'] ?>)" title="Supprimer">
+                        <ion-icon name="trash-outline"></ion-icon>
+                    </button>
+
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
@@ -124,18 +126,29 @@ foreach ($notifications as $notif) {
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
 <script>
-async function updateNotif(id, action) {
-    // Si c'est un lien (mark_as_read), on n'empêche pas la navigation, on lance juste l'appel
-    const response = await fetch('../../controler/notif_actions.php', {
+document.querySelectorAll('.notif-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+        if (e.target.closest('.notif-delete-btn')) return;
+        item.classList.remove('notif-unread');
+        const id = item.dataset.id;
+        fetch('<?= BASE_URL ?>/controler/notif-actions.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id, action: 'mark_read' })
+        });
+    });
+});
+
+async function supprimerNotif(id) {
+    const response = await fetch('<?= BASE_URL ?>/controler/notif-actions.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: id, action: action })
+        body: JSON.stringify({ id: id, action: 'delete' })
     });
-    
-    if (response.ok && action === 'delete') {
+    if (response.ok) {
         const item = document.querySelector(`.notif-item[data-id="${id}"]`);
         if (item) {
-            item.style.transition = '0.3s';
+            item.style.transition = 'opacity 0.3s, transform 0.3s';
             item.style.opacity = '0';
             item.style.transform = 'translateX(20px)';
             setTimeout(() => item.remove(), 300);
