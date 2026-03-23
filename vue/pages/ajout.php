@@ -229,7 +229,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div id="preview-zone" class="preview-zone hidden"></div>
 
-        <?php if (!empty($albums)): ?>
+        
         <div class="extra-section">
             <button type="button" class="extra-toggle" onclick="toggleExtra('album-block')">
                 <div class="extra-toggle-left">
@@ -274,7 +274,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
         </div>
-        <?php endif; ?>
+        
 
         <div class="extra-section">
             <button type="button" class="extra-toggle" onclick="toggleCapsule()">

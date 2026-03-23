@@ -73,6 +73,7 @@ $typeIcons = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="<?= BASE_URL ?>/vue/assets/css/app.css?v=<?= time() ?>">
+    <link rel="manifest" href="<?= BASE_URL ?>/manifest.json">
     <link rel="icon" type="image/png" sizes="60x60" href="<?= BASE_URL ?>/vue/assets/images/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <title>Golden Memories</title>
@@ -181,6 +182,12 @@ $typeIcons = [
 <!-- inclusion de la navbar -->
 <?php include './templates/navbar.php'; ?>
 
+
+<script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register('<?= BASE_URL ?>/sw.js');
+   }
+</script>
 <!-- fichier javascript -->
 <script src="<?= BASE_URL ?>/vue/assets/js/app.js?v=<?= time() ?>"></script>
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
