@@ -59,9 +59,6 @@ if (isset($_SESSION['user']['id'])) {
             <a href="./parametres.php" class="parametre">
                 <ion-icon name="cog-outline"></ion-icon>
             </a>
-            <a href="<?= BASE_URL ?>/controler/logout.php" class="parametre">
-                <ion-icon name="log-out-outline"></ion-icon>
-            </a>
         </div>
     </div>
 
