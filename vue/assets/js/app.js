@@ -102,11 +102,17 @@ function updateAlbumSub(radio, name) {
 
 function createAlbum() {
     const input = document.getElementById('new-album-input');
-    const name  = input.value.trim();
+    const sharedCheckbox = document.getElementById('new-album-shared'); // On récupère l'élément checkbox
+    const name = input.value.trim();
+    
     if (!name) return;
+
+    // On détermine la valeur : 1 si coché, 0 sinon
+    const isShared = sharedCheckbox && sharedCheckbox.checked ? 1 : 0;
 
     const form = new FormData();
     form.append('new_album_title', name);
+    form.append('is_shared', isShared); // ON AJOUTE CETTE LIGNE !
 
     fetch('', { method: 'POST', body: form })
         .then(r => r.json())
@@ -116,20 +122,30 @@ function createAlbum() {
             const list = document.querySelector('.album-list');
             const label = document.createElement('label');
             label.className = 'album-option';
+            
+            // On peut ajouter un petit indicateur visuel (icône people) si data.is_shared == 1
+            const sharedIcon = data.is_shared == 1 ? '<ion-icon name="people" style="font-size:12px; margin-left:5px; color:var(--primary-color)"></ion-icon>' : '';
+            
             label.innerHTML = `
                 <input type="radio" name="album_id" value="${data.id}"
                        onchange="updateAlbumSub(this, '${data.title.replace(/'/g,"\\'")}')">
                 <span class="album-option-content">
                     <ion-icon name="albums-outline"></ion-icon>
-                    ${data.title}
+                    ${data.title} ${sharedIcon}
                 </span>`;
             list.appendChild(label);
 
             label.querySelector('input').click();
+            
+            // Réinitialisation du formulaire d'album
             input.value = '';
+            if(sharedCheckbox) {
+                sharedCheckbox.checked = false;
+                // On déclenche l'événement 'change' manuellement pour remettre l'icône à jour graphiquement
+                sharedCheckbox.dispatchEvent(new Event('change'));
+            }
         });
 }
-
 
 // mise à jour de l'icône selon l'état du toggle de partage
     document.getElementById('new-album-shared')?.addEventListener('change', function () {
