@@ -8,6 +8,10 @@ if (!isset($_SESSION['user'])) {
 
 $userId = $_SESSION['user']['id'];
 
+// Marque toutes les notifs comme lues dès l'ouverture (sauf les demandes d'ami en attente)
+$bdd->prepare("UPDATE notifications SET is_read = 1 WHERE user_id = :uid AND is_read = 0 AND type != 'friend_request'")
+    ->execute([':uid' => $userId]);
+
 // Récupère toutes les notifications de l'utilisateur connecté
 $stmt = $bdd->prepare("
     SELECT n.*, u.username, u.picture 
@@ -57,9 +61,118 @@ foreach ($notifications as $notif) {
             <?php foreach ($notifications as $notif): ?>
                 <div class="notif-item <?= $notif['is_read'] ? '' : 'notif-unread' ?>" data-id="<?= $notif['id'] ?>">
 
-                    <button class="notif-delete-btn" onclick="updateNotif(<?= $notif['id'] ?>, 'delete')">
-                        <ion-icon name="close-outline"></ion-icon>
+                    <div class="notif-icon">
+                        <?php if (!empty($notif['picture'])): ?>
+                            <img src="<?= BASE_URL ?>/vue/assets/images/<?= htmlspecialchars($notif['picture']) ?>" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                        <?php else: ?>
+                            <img src="<?= BASE_URL ?>/vue/assets/images/default.jpg" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="notif-content">
+                        <?php if ($notif['type'] === 'new_memory' && $notif['reference_id']): ?>
+                            <a href="<?= BASE_URL ?>/vue/pages/post.php?id=<?= $notif['reference_id'] ?>" class="notif-link">
+                                <p class="notif-text"><?= htmlspecialchars($notif['content']) ?></p>
+                                <?php if (isset($apercus[$notif['reference_id']])): ?>
+                                    <?php $apercu = $apercus[$notif['reference_id']]; ?>
+                                    <div class="notif-apercu">
+                                        <?php if ($apercu['type'] === 'photo' && $apercu['file_path']): ?>
+                                            <img src="<?= BASE_URL ?>/<?= htmlspecialchars($apercu['file_path']) ?>" alt="">
+                                        <?php elseif ($apercu['type'] === 'video'): ?>
+                                            <div class="notif-apercu-icon"><ion-icon name="videocam-outline"></ion-icon></div>
+                                        <?php elseif ($apercu['type'] === 'audio'): ?>
+                                            <div class="notif-apercu-icon"><ion-icon name="musical-notes-outline"></ion-icon></div>
+                                        <?php elseif ($apercu['type'] === 'note'): ?>
+                                            <div class="notif-apercu-note"><?= htmlspecialchars(substr($apercu['content'] ?? '', 0, 50)) ?>...</div>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
+                            </a>
+                        <?php else: ?>
+                            <p class="notif-text"><?= htmlspecialchars($notif['content']) ?></p>
+                        <?php endif; ?>
+
+                        <span class="notif-time"><?= date('d/m/Y à H:i', strtotime($notif['created_at'])) ?></span>
+
+                        <?php if ($notif['type'] === 'friend_request'): ?>
+                            <div class="notif-actions">
+                                <a href="<?= BASE_URL ?>/controler/accept_friends.php?from=<?= $notif['from_user_id'] ?>&notif=<?= $notif['id'] ?>" class="notif-accept">
+                                    Accepter
+                                </a>
+                                <a href="<?= BASE_URL ?>/controler/decline_friends.php?from=<?= $notif['from_user_id'] ?>&notif=<?= $notif['id'] ?>" class="notif-refuse">
+                                    Refuser
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if (!$notif['is_read']): ?>
+                        <div class="notif-dot"></div>
+                    <?php endif; ?>
+
+                    <button class="notif-delete-btn" onclick="supprimerNotif(<?= $notif['id'] ?>)" title="Supprimer">
+                        <ion-icon name="trash-outline"></ion-icon>
                     </button>
+
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+
+    </div>
+
+</div>
+
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+<script>
+async function supprimerNotif(id) {
+    const response = await fetch('../../controler/notif-actions.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id, action: 'delete' })
+    });
+    if (response.ok) {
+        const item = document.querySelector(`.notif-item[data-id="${id}"]`);
+        if (item) {
+            item.style.transition = 'opacity 0.3s, transform 0.3s';
+            item.style.opacity = '0';
+            item.style.transform = 'translateX(20px)';
+            setTimeout(() => item.remove(), 300);
+        }
+    }
+}
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/vue/assets/css/app.css?v=<?= time() ?>">
+    <title>Golden Memories — Notifications</title>
+</head>
+<body>
+
+<div class="form-page">
+
+    <div class="form-top">
+        <a href="<?= BASE_URL ?>" class="form-back">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+        </a>
+        <h1 class="form-title">Notifications</h1>
+    </div>
+
+    <div class="notif-list">
+
+        <?php if (empty($notifications)): ?>
+            <p class="amis-empty">Aucune notification pour l'instant</p>
+
+        <?php else: ?>
+            <?php foreach ($notifications as $notif): ?>
+                <div class="notif-item <?= $notif['is_read'] ? '' : 'notif-unread' ?>">
 
                     <div class="notif-icon">
                         <?php if (!empty($notif['picture'])): ?>
@@ -71,9 +184,7 @@ foreach ($notifications as $notif) {
 
                     <div class="notif-content">
                         <?php if ($notif['type'] === 'new_memory' && $notif['reference_id']): ?>
-                            <a href="<?= BASE_URL ?>/vue/pages/post.php?id=<?= $notif['reference_id'] ?>" 
-                               class="notif-link" 
-                               onclick="updateNotif(<?= $notif['id'] ?>, 'mark_as_read')">
+                            <a href="<?= BASE_URL ?>/vue/pages/post.php?id=<?= $notif['reference_id'] ?>" class="notif-link">
                                 <p class="notif-text"><?= htmlspecialchars($notif['content']) ?></p>
                                 <?php if (isset($apercus[$notif['reference_id']])): ?>
                                     <?php $apercu = $apercus[$notif['reference_id']]; ?>
@@ -122,27 +233,5 @@ foreach ($notifications as $notif) {
 
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-
-<script>
-async function updateNotif(id, action) {
-    // Si c'est un lien (mark_as_read), on n'empêche pas la navigation, on lance juste l'appel
-    const response = await fetch('../../controler/notif_actions.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: id, action: action })
-    });
-    
-    if (response.ok && action === 'delete') {
-        const item = document.querySelector(`.notif-item[data-id="${id}"]`);
-        if (item) {
-            item.style.transition = '0.3s';
-            item.style.opacity = '0';
-            item.style.transform = 'translateX(20px)';
-            setTimeout(() => item.remove(), 300);
-        }
-    }
-}
-</script>
-
 </body>
 </html>

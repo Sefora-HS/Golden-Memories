@@ -40,6 +40,8 @@ if (!$album) {
     exit;
 }
 
+$estProprietaire = ($album['user_id'] == $userId);
+
 $stmtMemories = $bdd->prepare("
     SELECT id, type, title, file_path, content, created_at
     FROM memories
@@ -86,6 +88,11 @@ foreach ($memories as $m) {
                 <ion-icon name="arrow-back-outline"></ion-icon>
                 <span>Mes albums</span>
             </a>
+            <?php if ($estProprietaire): ?>
+                <button class="hero-btn-delete" onclick="openDeleteModal()" title="Supprimer l'album">
+                    <ion-icon name="trash-outline"></ion-icon>
+                </button>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -163,7 +170,41 @@ foreach ($memories as $m) {
     </div>
 <?php endif; ?>
 
+<!-- ── Modale de confirmation de suppression ── -->
+<div class="delete-modal-overlay" id="delete-modal-overlay" onclick="closeDeleteModal(event)">
+    <div class="delete-modal">
+        <div class="delete-modal-icon">
+            <ion-icon name="trash-outline"></ion-icon>
+        </div>
+        <h3 class="delete-modal-title">Supprimer l'album ?</h3>
+        <p class="delete-modal-text">
+            Cette action est <strong>irréversible</strong>. L'album et tous ses souvenirs seront définitivement supprimés.
+        </p>
+        <div class="delete-modal-actions">
+            <button class="delete-modal-cancel" onclick="closeDeleteModalBtn()">Annuler</button>
+            <a href="<?= BASE_URL ?>/controler/delete_album.php?id=<?= $albumId ?>&redirect=albums"
+               class="delete-modal-confirm">Supprimer</a>
+        </div>
+    </div>
+</div>
+
 <?php include './templates/navbar.php'; ?>
+
+<script>
+function openDeleteModal() {
+    document.getElementById('delete-modal-overlay').classList.add('visible');
+}
+
+function closeDeleteModal(e) {
+    if (e.target === document.getElementById('delete-modal-overlay')) {
+        document.getElementById('delete-modal-overlay').classList.remove('visible');
+    }
+}
+
+function closeDeleteModalBtn() {
+    document.getElementById('delete-modal-overlay').classList.remove('visible');
+}
+</script>
 
 <script src="<?= BASE_URL ?>/vue/assets/js/app.js?v=<?= time() ?>"></script>
 <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>

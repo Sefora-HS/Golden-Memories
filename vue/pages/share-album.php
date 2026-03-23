@@ -136,11 +136,16 @@ $inviteSuccess = isset($_GET['invited']) ? 1 : 0;
                 <ion-icon name="arrow-back-outline"></ion-icon>
                 <span>Partages</span>
             </a>
-            <?php if ($estProprietaire): ?>
-                <span class="hero-badge-owner">
-                    <ion-icon name="shield-checkmark-outline"></ion-icon> Admin
-                </span>
-            <?php endif; ?>
+            <div class="hero-overlay-right">
+                <?php if ($estProprietaire): ?>
+                    <span class="hero-badge-owner">
+                        <ion-icon name="shield-checkmark-outline"></ion-icon> Admin
+                    </span>
+                    <button class="hero-btn-delete" onclick="openDeleteModal()" title="Supprimer l'album">
+                        <ion-icon name="trash-outline"></ion-icon>
+                    </button>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 
@@ -323,6 +328,24 @@ $inviteSuccess = isset($_GET['invited']) ? 1 : 0;
     </div>
 </div>
 
+<!-- ── Modale de confirmation de suppression ── -->
+<div class="delete-modal-overlay" id="delete-modal-overlay" onclick="closeDeleteModal(event)">
+    <div class="delete-modal">
+        <div class="delete-modal-icon">
+            <ion-icon name="trash-outline"></ion-icon>
+        </div>
+        <h3 class="delete-modal-title">Supprimer l'album ?</h3>
+        <p class="delete-modal-text">
+            Cette action est <strong>irréversible</strong>. L'album et tous ses souvenirs seront définitivement supprimés pour tous les membres.
+        </p>
+        <div class="delete-modal-actions">
+            <button class="delete-modal-cancel" onclick="closeDeleteModalBtn()">Annuler</button>
+            <a href="<?= BASE_URL ?>/controler/delete_album.php?id=<?= $albumId ?>&redirect=partage"
+               class="delete-modal-confirm">Supprimer</a>
+        </div>
+    </div>
+</div>
+
 <?php include './templates/navbar.php'; ?>
 
 <script>
@@ -347,6 +370,20 @@ function filterInviteAmis() {
     document.querySelectorAll('#invite-amis .share-ami-item').forEach(item => {
         item.style.display = item.dataset.username.toLowerCase().includes(q) ? 'flex' : 'none';
     });
+}
+
+function openDeleteModal() {
+    document.getElementById('delete-modal-overlay').classList.add('visible');
+}
+
+function closeDeleteModal(e) {
+    if (e.target === document.getElementById('delete-modal-overlay')) {
+        document.getElementById('delete-modal-overlay').classList.remove('visible');
+    }
+}
+
+function closeDeleteModalBtn() {
+    document.getElementById('delete-modal-overlay').classList.remove('visible');
 }
 
 const toast = document.getElementById('invite-toast');

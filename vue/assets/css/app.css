@@ -138,6 +138,27 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+}
+
+.notif-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #e74c3c;
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 600;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    border: 1.5px solid #fff;
+    pointer-events: none;
 }
 
 .pp {
@@ -780,7 +801,6 @@ a {
 }
 
 .memory-card-note p {
-
     font-size: 1.3rem;
     line-height: 1.6;
     color: #323231;
@@ -969,8 +989,6 @@ a {
     margin-bottom: 0.3rem;
 }
 
-/* Carré centré */
-
 .legal-card {
     background: #ffffff;
     border-radius: 20px; 
@@ -981,7 +999,6 @@ a {
     padding: 30px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
 }
-
 
 .legal-card .privacy-section {
     margin-bottom: 20px;
@@ -1001,7 +1018,6 @@ a {
     color: #4a4a4a;
 }
 
-
 .btn-download {
     display: block;
     background-color: #F6E7B4;
@@ -1015,7 +1031,7 @@ a {
 }
 
 .settings-dark {
-    background-color: #000000 !important; /* Fond noir total */
+    background-color: #000000 !important;
     color: #ffffff;
 }
 
@@ -1030,7 +1046,6 @@ a {
     font-size: 1.8rem;
 }
 
-/* Barre de recherche style Insta */
 .search-bar {
     background: #262626;
     border-radius: 10px;
@@ -1054,12 +1069,6 @@ a {
     width: 100%;
 }
 
-/* Items de la liste */
-.settings-list {
-    display: flex;
-    flex-direction: column;
-}
-
 .setting-item {
     display: flex;
     align-items: center;
@@ -1068,7 +1077,7 @@ a {
     color: #ffffff;
     text-decoration: none;
     cursor: pointer;
-    border-bottom: 0.5px solid #1a1a1a; /* Ligne très fine */
+    border-bottom: 0.5px solid #1a1a1a;
 }
 
 .setting-item ion-icon {
@@ -1080,7 +1089,6 @@ a {
     font-weight: 400;
 }
 
-/* Section bas de page */
 .meta-section {
     margin-top: 30px;
     padding: 0 5px;
@@ -1140,6 +1148,30 @@ a {
     padding: 1rem;
     border-radius: 16px;
     box-shadow: 0 0 10px rgba(255, 221, 87, 0.2);
+    position: relative;
+}
+
+.notif-delete-btn {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #ccc;
+    font-size: 1.1rem;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    transition: background 0.2s, color 0.2s;
+    margin-top: 2px;
+}
+
+.notif-delete-btn:hover {
+    background: #fde8e8;
+    color: #e05555;
 }
 
 .notif-unread {
@@ -1323,6 +1355,7 @@ a {
     object-fit: cover;
     max-height: 220px;
 }
+
 .capsule-hero {
     background: #2C2C2C;
     border-radius: 20px;
@@ -1344,6 +1377,79 @@ a {
     font-size: 0.85rem;
     color: #fff;
     line-height: 1.5;
+}
+.capsule-section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin: 0.5rem 0.2rem 0.3rem;
+}
+
+.capsule-open-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: #e84040;
+    color: #fff;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.capsule-open-btn:hover { background: #c0392b; }
+
+.capsule-badge-ready {
+    background: #fde8e8;
+    color: #e84040;
+}
+
+.capsule-card.capsule-ready {
+    border: 1px solid rgba(232, 64, 64, 0.2);
+}
+
+.capsule-note-content {
+    background: #f6e7b4;
+    border-radius: 0 0 16px 16px;
+    padding: 12px 16px;
+    font-family: 'Caveat', cursive;
+    font-size: 1.1rem;
+    color: #2c2c2c;
+    line-height: 1.6;
+    margin-top: -0.8rem;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+}
+
+.capsule-media {
+    margin-top: -0.8rem;
+    margin-bottom: 0.8rem;
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+}
+.capsule-media video,
+.capsule-media audio {
+    width: 100%;
+    display: block;
+}
+
+.capsule-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #aaa;
+    font-size: 0.9rem;
+}
+.capsule-empty ion-icon {
+    font-size: 2.5rem;
+    opacity: 0.3;
+    display: block;
+    margin: 0 auto 0.8rem;
 }
 
 /* affichage des albums personnels */
@@ -1484,7 +1590,6 @@ a {
     margin: 0 auto;
 }
 
-/* ── Titre ── */
 .ci-title {
     font-family: 'Caveat', cursive;
     font-size: 3.2rem;
@@ -1494,7 +1599,6 @@ a {
     margin-bottom: .5rem;
 }
 
-/* Trait jaune sous le titre */
 .ci-title-underline {
     width: 52px;
     height: 5px;
@@ -1503,7 +1607,6 @@ a {
     margin-bottom: 1rem;
 }
 
-/* ── Méta ── */
 .ci-meta {
     display: flex;
     flex-wrap: wrap;
@@ -1553,7 +1656,6 @@ a {
     min-height: 20px;
 }
 
-/* Ruban adhésif décoratif */
 .ci-tape {
     width: 60px; height: 22px;
     background: rgba(246, 231, 180, 0.75);
@@ -1571,7 +1673,6 @@ a {
     padding: 28px 24px 24px;
 }
 
-/* ── Vidéo style polaroid ── */
 .ci-polaroid-video {
     background: #fff;
     padding: 10px 10px 42px;
@@ -1585,7 +1686,6 @@ a {
     width: 100%; display: block;
 }
 
-/* ── Audio card ── */
 .ci-audio-wrap {
     background: #f6e7b4;
     border-radius: 20px;
@@ -1612,7 +1712,6 @@ a {
 }
 .ci-audio-wrap audio { width: 100%; }
 
-/* ── Note card ── */
 .ci-note-wrap {
     background: #f6e7b4;
     border-radius: 20px;
@@ -1639,7 +1738,6 @@ a {
     z-index: 1;
 }
 
-/* ── Modale ── */
 .ci-modal {
     display: none; position: fixed; inset: 0; z-index: 200;
     background: rgba(0,0,0,.9);
@@ -1666,7 +1764,6 @@ a {
     gap: 1.8rem;
 }
 
-/* Grille de sélection */
 .type-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1703,14 +1800,12 @@ a {
 }
 .type-card.selected .type-icon { background: #2c2c2c; color: #f6e7b4; transform: scale(1.05); }
 
-/* Formulaire */
 .ajout-form { display: flex; flex-direction: column; gap: 1.2rem; animation: fadeSlideUp .3s ease; }
 .ajout-form.hidden { display: none; }
 @keyframes fadeSlideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
 .hidden { display: none !important; }
 .optional { opacity:.45; font-size:.8rem; }
 
-/* Upload */
 .file-zone { display: flex; flex-direction: column; gap: .5rem; }
 .file-drop {
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
@@ -1722,7 +1817,6 @@ a {
 .file-drop ion-icon { font-size: 2.5rem; color: #2c2c2c; opacity:.5; }
 .file-name { font-size:.8rem; opacity:.5; max-width:90%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
-/* Note */
 .note-textarea {
     background: #fff; border: none; border-radius: 16px; padding: 1rem;
     font-size: 1.1rem; font-family: 'Caveat', cursive; color: #2c2c2c;
@@ -1732,12 +1826,10 @@ a {
 .note-textarea:focus { box-shadow: 0 0 0 2px #f6e7b4; }
 .note-textarea::placeholder { color: #ccc; }
 
-/* Preview */
 .preview-zone { border-radius: 16px; overflow: hidden; background: #1a1a2e; }
 .preview-img, .preview-video { width: 100%; max-height: 320px; object-fit: cover; display: block; }
 .preview-audio { width: 100%; padding: 12px; }
 
-/* ── Sections extras (album + capsule) ── */
 .extra-section {
     background: #fff;
     border-radius: 20px;
@@ -1799,7 +1891,6 @@ a {
     padding-top: .9rem;
 }
 
-/* Album list */
 .album-list { display: flex; flex-direction: column; gap: .5rem; }
 .album-option { display: block; cursor: pointer; }
 .album-option input[type="radio"] { display: none; }
@@ -1822,7 +1913,6 @@ a {
 }
 .album-option input:checked + .album-option-content ion-icon { color: #c49a00; }
 
-/* Toggle switch capsule */
 .toggle-switch {
     width: 44px; height: 26px;
     border-radius: 100px;
@@ -1844,14 +1934,12 @@ a {
 }
 .toggle-switch.on .toggle-thumb { transform: translateX(18px); }
 
-/* Submit */
 .ajout-submit {
     display: flex; align-items: center; justify-content: center;
     gap: 8px; border: none; cursor: pointer; font-size: 1rem; margin-top: .4rem;
 }
 .ajout-submit ion-icon { font-size: 1.2rem; }
 
-/* Erreur */
 .form-error {
     background: #ffe0e0; color: #c0392b;
     padding: .8rem 1rem; border-radius: 12px; font-size: .9rem;
@@ -1880,8 +1968,7 @@ a {
 }
 .new-album-btn:hover { background: #f0dc8a; }
 
-
-/* ------------------------------------------------------------------------------ */
+/* ── Album hero ── */
 .hero-img { width: 100%; height: 100%; object-fit: cover; }
 
 .hero-img--placeholder {
@@ -1896,9 +1983,21 @@ a {
 }
 
 .hero-overlay {
-    position: absolute; top: 20px; width: 100%;
-    display: flex; justify-content: space-between; padding: 0 20px;
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 0 20px;
 }
+
+.hero-overlay-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .hero-btn-back, .hero-btn-close {
     background: rgba(255,255,255,0.85);
     border: none; padding: 8px 15px; border-radius: 20px;
@@ -1906,6 +2005,122 @@ a {
     font-size: 0.9rem; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500;
 }
 
+/* ── Bouton poubelle dans le hero ── */
+.hero-btn-delete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(220, 38, 38, 0.85);
+    color: #fff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: background 0.2s, transform 0.15s;
+}
+.hero-btn-delete:hover {
+    background: rgba(185, 28, 28, 0.95);
+    transform: scale(1.08);
+}
+
+/* ── Modale de confirmation suppression ── */
+.delete-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+}
+.delete-modal-overlay.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.delete-modal {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem 1.75rem 1.5rem;
+    max-width: 320px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    transform: translateY(20px);
+    transition: transform 0.25s;
+}
+.delete-modal-overlay.visible .delete-modal {
+    transform: translateY(0);
+}
+
+.delete-modal-icon {
+    font-size: 2.5rem;
+    color: #ef4444;
+    margin-bottom: 0.75rem;
+}
+
+.delete-modal-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 0.5rem;
+}
+
+.delete-modal-text {
+    font-size: 0.88rem;
+    color: #888;
+    line-height: 1.5;
+    margin: 0 0 1.5rem;
+}
+
+.delete-modal-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.delete-modal-cancel {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 12px;
+    border: 1.5px solid #e0e0e0;
+    background: transparent;
+    color: #2c2c2c;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+}
+.delete-modal-cancel:hover { background: #f5f5f5; }
+
+.delete-modal-confirm {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 12px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+}
+.delete-modal-confirm:hover { background: #dc2626; }
+
+/* ── Info album ── */
 .album-header-info {
     text-align: center; padding: 20px 25px;
     background: #fff2c6;
@@ -1925,7 +2140,6 @@ a {
     margin-top: 6px;
 }
 .album-meta-info ion-icon { font-size: 0.9rem; }
-
 
 .album-interact {
     display: flex; justify-content: space-between;
@@ -1963,7 +2177,6 @@ a {
 .item-note p { font-family: 'Caveat', cursive; font-size: 1.1rem; color: #3a2d00; line-height: 1.5; }
 .item-note small { font-size: 0.72rem; color: #aaa; }
 .bento-item-label { font-size: 0.8rem; color: #555; text-align: center; padding: 4px 0; }
-
 
 .partages-pages {
     display: flex;
@@ -2372,6 +2585,7 @@ a {
     font-size: 0.85rem;
     padding: 2rem 0;
 }
+
 .profil-amis-btn {
     display: flex;
     align-items: center;
@@ -2386,6 +2600,7 @@ a {
     font-size: 0.9rem;
     font-weight: 500;
 }
+
 .profil-top-actions {
     display: flex;
     align-items: center;
@@ -2394,6 +2609,7 @@ a {
 .profil-top-actions .parametre {
     font-size: 1.1rem;
 }
+
 .amis-delete-btn {
     background: #f0f0f0;
     border: none;
@@ -2407,12 +2623,12 @@ a {
     color: #e84040;
     cursor: pointer;
 }
+
 a.profil-stat {
     text-decoration: none;
     color: inherit;
 }
 
-/* avatar profil */
 .profil-avatar-label {
     position: relative;
     cursor: pointer;
@@ -2554,6 +2770,7 @@ a.profil-stat {
     text-decoration: none;
     color: inherit;
 }
+
 .share-success {
     background: #2c2c2c;
     color: #f6e7b4;
@@ -2570,6 +2787,7 @@ a.profil-stat {
     70% { opacity: 1; }
     100% { opacity: 0; display: none; }
 }
+
 .notif-apercu {
     margin-top: 0.4rem;
     border-radius: 10px;
@@ -2609,7 +2827,7 @@ a.profil-stat {
     font-family: 'Caveat', cursive;
 }
 
-/* ── Album partagé — nouvelles classes ── */
+/* ── Album partagé ── */
 
 .hero-badge-owner {
     background: rgba(255,255,255,0.85);
@@ -2677,7 +2895,6 @@ a.profil-stat {
     color: rgba(255,255,255,0.85);
 }
 
-/* Lecture seule : like/commentaire désactivés */
 .post-action-readonly {
     background: none; border: none;
     font-size: 1.5rem; color: #ccc;
@@ -2689,7 +2906,6 @@ a.profil-stat {
     font-family: 'DM Sans', sans-serif;
 }
 
-/* Commentaire verrouillé */
 .post-comment-locked {
     display: flex;
     align-items: center;
@@ -2771,7 +2987,6 @@ a.profil-stat {
 }
 .new-album-shared-label ion-icon { font-size: 1rem; color: #c49a00; }
 
-
 /* ── Badge rôle sur les cartes d'albums partagés ── */
 .album-card-role-badge {
     position: absolute;
@@ -2819,11 +3034,10 @@ a.profil-stat {
     --card-bg: #1e1e1e;
 }
 
-/* Appliquer les variables aux éléments */
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
-    transition: background-color 0.3s ease; /* Pour que ce soit fluide */
+    transition: background-color 0.3s ease;
 }
 
 .form-page {
@@ -2833,81 +3047,4 @@ body {
 .setting-item {
     background-color: var(--card-bg);
     color: var(--text-color);
-}
-
-
-/* ── Capsules — classes dynamiques à ajouter ── */
-
-.capsule-badge-ready {
-    background: #fde8e8;
-    color: #e84040;
-}
-
-.capsule-card.capsule-ready {
-    border: 1px solid rgba(232, 64, 64, 0.2);
-}
-
-.capsule-section-title {
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #aaa;
-    margin: 0.5rem 0.2rem 0.3rem;
-}
-
-.capsule-open-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 0.5rem;
-    padding: 0.4rem 0.9rem;
-    border-radius: 50px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    background: #e84040;
-    color: #fff;
-    text-decoration: none;
-    transition: background 0.2s;
-}
-.capsule-open-btn:hover { background: #c0392b; }
-
-.capsule-note-content {
-    background: #f6e7b4;
-    border-radius: 0 0 16px 16px;
-    padding: 12px 16px;
-    font-family: 'Caveat', cursive;
-    font-size: 1.1rem;
-    color: #2c2c2c;
-    line-height: 1.6;
-    margin-top: -0.8rem;
-    border: 1px solid #e0e0e0;
-    border-top: none;
-}
-
-.capsule-media {
-    margin-top: -0.8rem;
-    margin-bottom: 0.8rem;
-    border-radius: 0 0 16px 16px;
-    overflow: hidden;
-    border: 1px solid #e0e0e0;
-    border-top: none;
-}
-.capsule-media video,
-.capsule-media audio {
-    width: 100%;
-    display: block;
-}
-
-.capsule-empty {
-    text-align: center;
-    padding: 3rem 1rem;
-    color: #aaa;
-    font-size: 0.9rem;
-}
-.capsule-empty ion-icon {
-    font-size: 2.5rem;
-    opacity: 0.3;
-    display: block;
-    margin: 0 auto 0.8rem;
 }
