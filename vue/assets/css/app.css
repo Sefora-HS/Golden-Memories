@@ -3048,3 +3048,126 @@ body {
     background-color: var(--card-bg);
     color: var(--text-color);
 }
+/* bouton partager capsule */
+.ci-share-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1.5rem auto 0;
+    background: #2c2c2c;
+    color: #f6e7b4;
+    border: none;
+    border-radius: 50px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.ci-share-btn:hover { background: #444; }
+.ci-share-btn ion-icon { font-size: 1.1rem; }
+
+/* partage capsule à la création */
+.capsule-share-group {
+    margin-top: 1rem;
+    border-top: 1px solid #f0e0a0;
+    padding-top: 1rem;
+}
+
+.capsule-share-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    color: #2c2c2c;
+    cursor: pointer;
+}
+
+.capsule-share-toggle ion-icon { font-size: 1.1rem; color: #c49a00; }
+
+.capsule-share-hint {
+    font-size: 0.8rem;
+    color: #888;
+    margin: 0.5rem 0 0.75rem;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.capsule-share-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.capsule-share-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+}
+
+.capsule-share-item:has(input:checked) {
+    background: #fdf6da;
+}
+
+.capsule-share-item input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.capsule-share-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid #f6e7b4;
+}
+
+.capsule-share-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.capsule-share-username {
+    flex: 1;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.capsule-share-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: transparent;
+    transition: all 0.15s;
+    flex-shrink: 0;
+}
+
+.capsule-share-item:has(input:checked) .capsule-share-check {
+    background: #2c2c2c;
+    border-color: #2c2c2c;
+    color: #f6e7b4;
+}

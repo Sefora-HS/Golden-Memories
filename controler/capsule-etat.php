@@ -28,7 +28,7 @@ if (isset($_GET['open']) && is_numeric($_GET['open'])) {
     exit;
 }
 
-// ── Récupérer toutes les capsules ──
+// ── Récupérer toutes les capsules (propres + partagées) ──
 $stmt = $bdd->prepare("
     SELECT 
         tc.id        AS capsule_id,
@@ -41,13 +41,18 @@ $stmt = $bdd->prepare("
         m.type,
         m.file_path,
         m.content,
+        m.user_id    AS owner_id,
         TIMESTAMPDIFF(SECOND, NOW(), tc.unlock_at) AS seconds_left
     FROM time_capsules tc
     JOIN memories m ON m.id = tc.memory_id
     WHERE m.user_id = :user_id
+       OR EXISTS (
+           SELECT 1 FROM capsule_shared cs
+           WHERE cs.capsule_id = tc.id AND cs.user_id = :user_id2
+       )
     ORDER BY tc.unlock_at ASC
 ");
-$stmt->execute([':user_id' => $user_id]);
+$stmt->execute([':user_id' => $user_id, ':user_id2' => $user_id]);
 $capsules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // ── Séparer en 4 groupes ──

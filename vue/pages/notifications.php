@@ -29,7 +29,10 @@ foreach ($notifications as $notif) {
     if ($notif['type'] === 'new_memory' && $notif['reference_id']) {
         $stmtApercu = $bdd->prepare("SELECT type, file_path, content FROM memories WHERE id = :id");
         $stmtApercu->execute([':id' => $notif['reference_id']]);
-        $apercus[$notif['reference_id']] = $stmtApercu->fetch(PDO::FETCH_ASSOC);
+        $result = $stmtApercu->fetch(PDO::FETCH_ASSOC);
+        if ($result !== false) {
+            $apercus[$notif['reference_id']] = $result;
+        }
     }
 }
 ?>

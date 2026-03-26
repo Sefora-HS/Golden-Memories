@@ -17,6 +17,17 @@ $stmtAlbums = $bdd->prepare("SELECT id, title FROM albums WHERE user_id = :uid O
 $stmtAlbums->execute([':uid' => $userId]);
 $albums = $stmtAlbums->fetchAll(PDO::FETCH_ASSOC);
 
+// Récupère les amis acceptés pour le panel de partage de capsule
+$stmtAmis = $bdd->prepare("
+    SELECT u.id, u.username, u.picture
+    FROM friends f
+    JOIN users u ON f.friend_id = u.id
+    WHERE f.user_id = :uid AND f.status = 'accepted'
+    ORDER BY u.username ASC
+");
+$stmtAmis->execute([':uid' => $userId]);
+$amisPourCapsule = $stmtAmis->fetchAll(PDO::FETCH_ASSOC);
+
 // Création d'un album via AJAX
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_album_title'])) {
     //récupération du titre entré par l'utilisateur
@@ -47,9 +58,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title         = trim($_POST['title'] ?? '');
     $content       = trim($_POST['content'] ?? '');
     $albumId       = !empty($_POST['album_id']) ? (int)$_POST['album_id'] : null;
-    $isCapsule     = isset($_POST['is_capsule']) && $_POST['is_capsule'] === '1';
-    $capsuleTitle  = trim($_POST['capsule_title'] ?? '');
-    $unlockAt      = trim($_POST['unlock_at'] ?? '');
+    $isCapsule       = isset($_POST['is_capsule']) && $_POST['is_capsule'] === '1';
+    $capsuleTitle    = trim($_POST['capsule_title'] ?? '');
+    $unlockAt        = trim($_POST['unlock_at'] ?? '');
+    $capsuleShareIds = isset($_POST['capsule_share_ids']) ? array_filter(array_map('intval', (array)$_POST['capsule_share_ids'])) : [];
 
     //autorise les photos, videos, audios et notes
     $allowedTypes = ['photo', 'video', 'audio', 'note'];
@@ -133,24 +145,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ':capsule_title' => $capsuleTitle ?: ($title ?: null),
                     ':unlock_at'     => $unlockAt,
                 ]);
+
+                $capsuleId = $bdd->lastInsertId();
+
+                // Partage de la capsule avec les amis sélectionnés dès la création
+                if (!empty($capsuleShareIds)) {
+                    // Vérifie que chaque destinataire est bien un ami accepté
+                    $stmtCheckAmi = $bdd->prepare("
+                        SELECT id FROM friends
+                        WHERE user_id = :uid AND friend_id = :fid AND status = 'accepted'
+                    ");
+                    $stmtInsertShare = $bdd->prepare("
+                        INSERT IGNORE INTO capsule_shared (capsule_id, user_id) VALUES (:capsule_id, :user_id)
+                    ");
+                    $stmtNotifCap = $bdd->prepare("
+                        INSERT INTO notifications (user_id, from_user_id, type, content, reference_id)
+                        VALUES (:user_id, :from_user_id, 'new_memory', :content, :reference_id)
+                    ");
+
+                    $titreNotif = $capsuleTitle ?: ($title ?: 'une capsule');
+
+                    foreach ($capsuleShareIds as $amiId) {
+                        $stmtCheckAmi->execute([':uid' => $userId, ':fid' => $amiId]);
+                        if (!$stmtCheckAmi->fetch()) continue; // sécurité : skip si pas ami
+
+                        $stmtInsertShare->execute([':capsule_id' => $capsuleId, ':user_id' => $amiId]);
+                        $stmtNotifCap->execute([
+                            ':user_id'      => $amiId,
+                            ':from_user_id' => $userId,
+                            ':content'      => '@' . $userConnecte['username'] . ' a partagé une capsule avec vous : "' . $titreNotif . '". Elle s\'ouvrira le ' . date('d/m/Y', strtotime($unlockAt)) . ' !',
+                            ':reference_id' => $capsuleId,
+                        ]);
+                    }
+                }
             }
 
             // --- DEBUT DU CODE NOTIFICATION ---
-            // On prépare la notification pour les amis : "X a ajouté un nouveau souvenir"
-            $stmtNotif = $bdd->prepare("
-                INSERT INTO notifications (user_id, from_user_id, type, content, reference_id)
-                SELECT friend_id, :my_id, 'new_memory', :msg, :mem_id
-                FROM friends 
-                WHERE user_id = :my_id AND status = 'accepted'
-            ");
+            // On notifie UNIQUEMENT si le souvenir est publié dans un album partagé.
+            // Un souvenir personnel ou dans un album privé ne génère aucune notification.
+            if ($albumId) {
+                // Vérifie que l'album est bien de type partagé
+                $stmtCheckAlbum = $bdd->prepare("SELECT is_shared FROM albums WHERE id = :id");
+                $stmtCheckAlbum->execute([':id' => $albumId]);
+                $albumInfo = $stmtCheckAlbum->fetch(PDO::FETCH_ASSOC);
 
-            $msgNotif = $userConnecte['username'] . " a ajouté un nouveau souvenir : " . ($title ?: "Sans titre");
+                if ($albumInfo && $albumInfo['is_shared'] == 1) {
+                    // Notifie uniquement les membres de cet album, sauf l'auteur du souvenir
+                    $stmtNotif = $bdd->prepare("
+                        INSERT INTO notifications (user_id, from_user_id, type, content, reference_id)
+                        SELECT user_id, :my_id, 'new_memory', :msg, :mem_id
+                        FROM album_members
+                        WHERE album_id = :album_id
+                          AND user_id != :my_id
+                    ");
 
-            $stmtNotif->execute([
-                ':my_id'  => $userId,
-                ':msg'    => $msgNotif,
-                ':mem_id' => $memoryId
-            ]);
+                    $msgNotif = $userConnecte['username'] . " a ajouté un souvenir dans l'album partagé : " . ($title ?: "Sans titre");
+
+                    $stmtNotif->execute([
+                        ':my_id'    => $userId,
+                        ':msg'      => $msgNotif,
+                        ':mem_id'   => $memoryId,
+                        ':album_id' => $albumId,
+                    ]);
+                }
+                // Album non partagé (is_shared = 0) → aucune notification
+            }
+            // Souvenir sans album (personnel) → aucune notification
             // --- FIN DU CODE NOTIFICATION ---
 
             //redirection vers la page d'accueil une fois le souvenir crée
@@ -302,6 +362,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                            min="<?= date('Y-m-d\TH:i') ?>"
                            value="<?= htmlspecialchars($_POST['unlock_at'] ?? '') ?>">
                 </div>
+
+                <!-- Partager la capsule avec des amis dès la création -->
+                <div class="form-group capsule-share-group">
+                    <button type="button" class="capsule-share-toggle" onclick="toggleCapsuleShare()">
+                        <ion-icon name="people-outline" id="capsule-share-icon"></ion-icon>
+                        <span id="capsule-share-label">Partager avec des amis</span>
+                        <ion-icon name="chevron-forward-outline" id="capsule-share-chevron" style="margin-left:auto;"></ion-icon>
+                    </button>
+                    <div id="capsule-share-block" class="hidden">
+                        <?php if (empty($amisPourCapsule)): ?>
+                            <p class="share-empty" style="padding:.5rem 0;">Tu n'as pas encore d'amis 👀</p>
+                        <?php else: ?>
+                            <p class="capsule-share-hint">Ils pourront voir la capsule une fois la date atteinte.</p>
+                            <div class="capsule-share-list" id="capsule-share-list">
+                                <?php foreach ($amisPourCapsule as $ami): ?>
+                                <label class="capsule-share-item">
+                                    <input type="checkbox" name="capsule_share_ids[]" value="<?= $ami['id'] ?>"
+                                        <?= in_array($ami['id'], $_POST['capsule_share_ids'] ?? []) ? 'checked' : '' ?>>
+                                    <div class="capsule-share-avatar">
+                                        <img src="<?= BASE_URL ?>/vue/assets/images/<?= htmlspecialchars($ami['picture'] ?? 'default.jpg') ?>" alt="">
+                                    </div>
+                                    <span class="capsule-share-username">@<?= htmlspecialchars($ami['username']) ?></span>
+                                    <div class="capsule-share-check"><ion-icon name="checkmark-outline"></ion-icon></div>
+                                </label>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -316,6 +406,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php include './templates/navbar.php'; ?>
 
 <script src="<?= BASE_URL ?>/vue/assets/js/app.js?v=<?= time() ?>"></script>
+<script>
+function toggleCapsuleShare() {
+    const block   = document.getElementById('capsule-share-block');
+    const chevron = document.getElementById('capsule-share-chevron');
+    const isHidden = block.classList.toggle('hidden');
+    chevron.style.transform = isHidden ? '' : 'rotate(90deg)';
+    if (!isHidden) {
+        // met à jour le label avec le nombre d'amis sélectionnés
+        updateCapsuleShareLabel();
+    }
+}
+
+function updateCapsuleShareLabel() {
+    const checked = document.querySelectorAll('input[name="capsule_share_ids[]"]:checked').length;
+    const label   = document.getElementById('capsule-share-label');
+    label.textContent = checked > 0
+        ? checked + ' ami' + (checked > 1 ? 's' : '') + ' sélectionné' + (checked > 1 ? 's' : '')
+        : 'Partager avec des amis';
+}
+
+document.querySelectorAll('input[name="capsule_share_ids[]"]').forEach(cb => {
+    cb.addEventListener('change', updateCapsuleShareLabel);
+});
+</script>
 <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </body>
